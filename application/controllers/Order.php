@@ -55,10 +55,26 @@ class Order extends CI_Controller {
     }
     
     public function updateOrder(){
-        $data['status']=$this->input->post('status');
-        $id = $this->input->post('id');
-        $this->OrderModel->update_status($id, $data);
-        echo json_encode($data);
+        $status['status']= "accepted"; //$this->input->post('status');
+        $orderId =  "d0080105c678433d8ad1761f2e7afd70"; //$this->input->post('id');
+        $results = $this->OrderModel->order_detail($orderId);
+        $request["acknowledgement_status"]= $status['status']; //this order will moved to the 'acknowledged' status
+        $request["alt_order_id"]= $results[0]->alt_order_id;
+        foreach ($results as $result){
+            $dataItem["order_item_acknowledgement_status"]= "fulfillable";
+            $dataItem["order_item_id"]=$result->order_item_id;
+            $dataItem["alt_order_item_id"]= $result->order_item_id;
+            $tmp[] = $dataItem;
+        }
+        $request["order_items"]= $tmp;
+        $JetApi = new JetApi();
+        $JetApi->getNewToken();
+        $token = $JetApi->getToken();
+        $end_point = "orders/" . $orderId."/acknowledge"; // orders/{jet_defined_order_id}/acknowledge
+        $response = $JetApi->apiPUT($end_point, $request);
+//        $this->OrderModel->update_status($orderId, $status);        
+//        print_r($response);
+        echo json_encode($status);
     }
 
 }

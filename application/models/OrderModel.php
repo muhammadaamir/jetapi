@@ -6,9 +6,9 @@ class OrderModel extends CI_Model {
         parent::__construct();
     }
     
-    public function update_status($id, $data) {
-        $this->db->where('id', $id);
-        $this->db->update('order_detail', $data);
+    public function update_status($orderId, $status) {
+        $this->db->where('order_id', $orderId);
+        $this->db->update('order_detail', $status);
     }
     
     public function order_detail($orderId) {

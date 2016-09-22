@@ -30,7 +30,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 dataType: 'json',
                 success: function(data) {
 //                    console.log(data);
-                    //alert(data.status);
+                    alert(data.status);
                     location.reload();
                 },
                 error: function(){
@@ -64,8 +64,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <td><?php echo $data->status?></td>
                     <td>
                         <?php if($data->status != 'accept'){ ?>
-                            <button type="button" class="btn btn-primary" value='accept' onclick='action("<?php echo $data->id ?>",this)'>Accept</button>
-                            <button type="button" class="btn btn-danger " value='reject' onclick='action("<?php echo $data->id ?>",this)'>Reject</button>
+                            <button type="button" class="btn btn-primary" value='accepted' onclick='action("<?php echo $data->order_id ?>",this)'>Accept</button>
+                            <button type="button" class="btn btn-danger " value='rejected' onclick='action("<?php echo $data->order_id ?>",this)'>Reject</button>
                         <?php }else{ ?>
                             <button type="button" class="btn btn-success" value='shipping' >Shipping</button>
                         <?php }?>
