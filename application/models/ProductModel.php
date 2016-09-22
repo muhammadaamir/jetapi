@@ -89,6 +89,7 @@ class ProductModel extends CI_Model {
         $JetApi = new JetApi();
         $JetApi->getNewToken();
         $token = $JetApi->getToken();
+        //echo $token ; die;
         $response = $JetApi->uploadFile("MerchantSKUs", $jsonFile);
         $this->updateProduct();
         $jet_file_id = $response->jet_file_id;
