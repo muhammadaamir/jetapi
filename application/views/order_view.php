@@ -63,11 +63,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <td><?php echo date('d/m/Y h:m a', strtotime($data->order_placed_date)) ?></td>
                     <td><?php echo $data->status?></td>
                     <td>
-                        <?php if($data->status != 'accept'){ ?>
+                        <?php if($data->status != 'accepted'){ ?>
                             <button type="button" class="btn btn-primary" value='accepted' onclick='action("<?php echo $data->order_id ?>",this)'>Accept</button>
                             <button type="button" class="btn btn-danger " value='rejected' onclick='action("<?php echo $data->order_id ?>",this)'>Reject</button>
                         <?php }else{ ?>
-                            <button type="button" class="btn btn-success" value='shipping' >Shipping</button>
+                            <button type="button" class="btn btn-success" value='shipped'  onclick='action("<?php echo $data->order_id ?>",this)'>Shipping</button>
                         <?php }?>
                         <a href='<?php echo "/order/oderDetail/".$data->order_id ?>' class="btn btn-info" role="button">View Detail</a>
                     </td>
