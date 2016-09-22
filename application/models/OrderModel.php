@@ -37,7 +37,7 @@ class OrderModel extends CI_Model {
 //        $this->db->select('order_detail.order_id, order_detail.url, order_detail.order_placed_date, order_detail.buyer_name, order_detail.status, order_detail.buyer_phone_number, order_detail.product_title, order_detail.shipping_to_address_address1,order_item.base_price');    
 //        $this->db->from('order_detail');
 //        $this->db->join('order_item', 'order_detail.order_id = order_item.order_id');
-        $this->db->where('status !=','reject');
+        $this->db->where('status !=','rejected');
         $query = $this->db->get('order_detail');
         if ($query->num_rows() > 0) {
             foreach ($query->result() as $row) {

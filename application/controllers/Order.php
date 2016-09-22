@@ -55,26 +55,54 @@ class Order extends CI_Controller {
     }
     
     public function updateOrder(){
-        $status['status']= "accepted"; //$this->input->post('status');
-        $orderId =  "d0080105c678433d8ad1761f2e7afd70"; //$this->input->post('id');
-        $results = $this->OrderModel->order_detail($orderId);
-        $request["acknowledgement_status"]= $status['status']; //this order will moved to the 'acknowledged' status
-        $request["alt_order_id"]= $results[0]->alt_order_id;
-        foreach ($results as $result){
-            $dataItem["order_item_acknowledgement_status"]= "fulfillable";
-            $dataItem["order_item_id"]=$result->order_item_id;
-            $dataItem["alt_order_item_id"]= $result->order_item_id;
-            $tmp[] = $dataItem;
+        $status['status']   = $this->input->post('status');
+        $orderId            = $this->input->post('id');
+        $results            = $this->OrderModel->order_detail($orderId);
+        if($status['status']== "shipped"){
+            $request["alt_order_id"]= $results[0]->alt_order_id;               
+                $dataShipments["alt_shipment_id"]           = "11223344";
+                $dataShipments["shipment_tracking_number"]  = "1Z12342452342";
+                $dataShipments["response_shipment_date"]    = "2014-06-11T18:00:00.0000000-04:00";
+                $dataShipments["response_shipment_method"]  = "ups_ground";
+                $dataShipments["expected_delivery_date"]    = "2014-06-11T18:00:00.0000000-04:00";
+                $dataShipments["ship_from_zip_code"]        = "12061";
+                $dataShipments["carrier_pick_up_date"]      = "2014-06-11T18:00:00.0000000-04:00";
+                $dataShipments["carrier"]                   = "UPS";
+                    foreach ($results as $result){
+                        $shipmentItem["shipment_item_id"]               = $result->order_item_id;
+                        $shipmentItem["alt_shipment_item_id"]           = $result->order_item_id;
+                        $shipmentItem["merchant_sku"]                   = $result->order_item_id;
+                        $shipmentItem["response_shipment_sku_quantity"] = "1";
+                        $shipmentItemTmp[]                              = $shipmentItem;
+                    }
+                  $dataShipments["shipment_items"]          = $shipmentItemTmp;
+            $tmp[]                  = $dataShipments;
+            $request["shipments"]   = $tmp;
+            $end_point              = "orders/" . $orderId."/shipped"; // orders/{jet_defined_order_id}/acknowledge
+        }else{
+            if($status['status']    == "accepted"){
+                $orderItemAcknowledgementStatus = "fulfillable";
+                $acknowledgementStatus          = $status['status'];
+            }else{
+                $orderItemAcknowledgementStatus = "nonfulfillable - no inventory";
+                $acknowledgementStatus          = "rejected - item level error";
+            }
+            $request["acknowledgement_status"]  = $acknowledgementStatus; //this order will moved to the 'acknowledged' status
+            $request["alt_order_id"]            = $results[0]->alt_order_id;
+            foreach ($results as $result){
+                $dataItem["order_item_acknowledgement_status"]  = $orderItemAcknowledgementStatus;
+                $dataItem["order_item_id"]                      = $result->order_item_id;
+                $dataItem["alt_order_item_id"]                  = $result->order_item_id;
+                $tmp[]                                          = $dataItem;
+            }
+            $request["order_items"]             = $tmp;
+            $end_point                          = "orders/" . $orderId."/acknowledge"; // orders/{jet_defined_order_id}/acknowledge
         }
-        $request["order_items"]= $tmp;
-        $JetApi = new JetApi();
+        $JetApi     = new JetApi();
         $JetApi->getNewToken();
-        $token = $JetApi->getToken();
-        $end_point = "orders/" . $orderId."/acknowledge"; // orders/{jet_defined_order_id}/acknowledge
-        $response = $JetApi->apiPUT($end_point, $request);
-//        $this->OrderModel->update_status($orderId, $status);        
-//        print_r($response);
+        $token      = $JetApi->getToken();
+        $response   = $JetApi->apiPUT($end_point, $request);
+        $this->OrderModel->update_status($orderId, $status);        
         echo json_encode($status);
     }
-
 }
