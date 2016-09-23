@@ -16,9 +16,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 //            });
             
         });
-        function action(id, objButton){
-            var id = id;
-            var statusValue = objButton.value;
+        $(document).on('click','.order',function(){
+            $('#loader-'+id).show();
+            var id = $(this).attr('order-id');
+            var statusValue = $(this).val();
 //            alert(id );
             $.ajax({
                 url: '<?php echo site_url('order/updateOrder'); ?>',
@@ -28,16 +29,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     id:id
                 },
                 dataType: 'json',
+                beforeSend: function (xhr) {
+                        $('#loader-'+id).show();
+                    },
                 success: function(data) {
-//                    console.log(data);
-                    alert(data.status);
-                    location.reload();
+//                    
+                    var data = JSON.stringify(data);
+                    alert(data);
+//                    location.reload();
+                    $('#loader-'+id).hide();
                 },
                 error: function(){
+            $('#loader-'+id).hide();
                   alert("error");
                 }
             });
-        }
+        });
         </script>
 
 </head>
@@ -62,14 +69,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <td><?php echo $data->order_id?></td>
                     <td><?php echo date('d/m/Y h:m a', strtotime($data->order_placed_date)) ?></td>
                     <td><?php echo $data->status?></td>
-                    <td>
-                        <?php if($data->status != 'accepted'){ ?>
-                            <button type="button" class="btn btn-primary" value='accepted' onclick='action("<?php echo $data->order_id ?>",this)'>Accept</button>
-                            <button type="button" class="btn btn-danger " value='rejected' onclick='action("<?php echo $data->order_id ?>",this)'>Reject</button>
-                        <?php }else{ ?>
-                            <button type="button" class="btn btn-success" value='shipped'  onclick='action("<?php echo $data->order_id ?>",this)'>Shipping</button>
+                    <td><div id="div-<?php echo $data->order_id ?>">
+                        <?php if($data->status == 'accepted'){ ?>
+                            <button type="button" class="btn btn-success order" value='shipped' order-id="<?php echo $data->order_id ?>" >Shipping</button>
+                        <?php
+                        }elseif($data->status == 'rejected'){
+                            
+                        }elseif($data->status == 'shipped'){?>
+                            <button type="button" class="btn btn-primary order" value='returned' order-id="<?php echo $data->order_id ?>" >Return</button>
+                        <?php 
+                        }elseif($data->status == 'returned'){
+                            
+                        }else{ ?>
+                            <button type="button" class="btn btn-primary order" value='accepted' order-id="<?php echo $data->order_id ?>" >Accept</button>
+                            <button type="button" class="btn btn-danger order" value='rejected' order-id="<?php echo $data->order_id ?>" >Reject</button>
                         <?php }?>
                         <a href='<?php echo "/order/oderDetail/".$data->order_id ?>' class="btn btn-info" role="button">View Detail</a>
+                        </div><span style="display:none" id="loader-<?php echo $data->order_id ?>"><img src="<?php echo base_url("assets/img/loader.gif"); ?>" /></span>
                     </td>
                 <tr>
             <?php }} ?>
