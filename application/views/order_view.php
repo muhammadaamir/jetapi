@@ -71,9 +71,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             }elseif($data->status == 'rejected'){
 
                             }elseif($data->status == 'shipped'){?>
-                                <button type="button" class="btn btn-primary order" value='returned' order-id="<?php echo $data->order_id ?>" >Return</button>
-                            <?php 
-                            }elseif($data->status == 'returned'){
+                            
+                            <?php
 
                             }else{ ?>
                                 <button type="button" class="btn btn-primary order" value='accepted' order-id="<?php echo $data->order_id ?>" >Accept</button>
