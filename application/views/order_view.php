@@ -10,12 +10,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <script type="text/javascript" src="<?php echo base_url("assets/js/bootstrap.js"); ?>"></script>
         
         <script>
-        $(document).ready(function(){
-//            $(".action").click(function(){
-//                alert('a');
-//            });
-            
-        });
         $(document).on('click','.order',function(){
             $('#loader-'+id).show();
             var id = $(this).attr('order-id');
@@ -35,8 +29,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 success: function(data) {
 //                    
                     var data = JSON.stringify(data);
-                    alert(data);
-//                    location.reload();
+//                    alert(data);
+                    location.reload();
                     $('#loader-'+id).hide();
                 },
                 error: function(){

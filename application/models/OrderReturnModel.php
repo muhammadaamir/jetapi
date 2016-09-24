@@ -24,7 +24,7 @@ class OrderReturnModel extends CI_Model {
     }
     
     public function record_count() {
-        return $this->db->count_all("order");
+        return $this->db->count_all("order_return");
     }
     
       public function fetch_orders($limit, $start) {

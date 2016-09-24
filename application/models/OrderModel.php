@@ -71,7 +71,7 @@ class OrderModel extends CI_Model {
     
     function checkOrderIdExist($orderId){
         $this->db->select("*");
-        $this->db->from('order');
+        $this->db->from('order_detail');
         $this->db->where('order_id', $orderId);
         $query = $this->db->get();
         return $query->result();
@@ -207,8 +207,6 @@ class OrderModel extends CI_Model {
         $JetApi->getNewToken();
         $token      = $JetApi->getToken();
         $response   = $JetApi->apiPUT($end_point, $request);
-//        var_dump($response);
-//        var_dump($request);
         $this->OrderModel->update_status($orderId, $status);
         return $response;
     }

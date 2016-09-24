@@ -8,7 +8,7 @@
 </head>
 <body>
 <div id="container" style="padding: 50px">
-  <h1>Order Detail</h1>
+  <h1>Return Order Detail</h1>
     <div id="body">
       <table class="table table-bordered ">
           <?php //echo '<pre>'; print_r($results); ?>
@@ -25,10 +25,17 @@
             <td>Return status  </td>
             <td><?php echo $results[0]->return_status; ?></td>
         </tr>
-        <tr>
-            <td>Refund without return : </td>
-            <td><?php echo  $results[0]->refund_without_return;?></td>
-        </tr>
+        <?php if($results[0]->refund_without_return){
+           echo "<tr>
+               <td> Refund without return: </td>
+               <td>True</td>
+            </tr>";
+        }else{
+             echo "<tr>
+                 <td> Refund without return </td>
+                 <td>False</td>
+            </tr>";
+        }?>
         <tr>
             <td>Merchant order id : </td>
             <td><?php echo  $results[0]->merchant_order_id;?></td>
@@ -45,53 +52,6 @@
             <td>Return date : </td>
             <td><?php echo  $results[0]->return_date;  ?></td>
         </tr>
-
-<!--        <tr>
-            <td>Alt order item id: </td>
-            <td><?php echo $results[0]->alt_order_item_id;?></td>
-        </tr>
-        <tr>
-            <td> Merchant sku: </td>
-            <td><?php echo $results[0]->merchant_sku;?></td>
-        </tr>
-        <tr>
-            <td> merchant_sku_title: </td>
-            <td><?php echo $results[0]->merchant_sku_title;?></td>
-        </tr>
-        <tr>
-            <td> return_quantity: </td>
-            <td><?php echo $results[0]->return_quantity;?></td>
-        </tr>
-        
-        
-        
-          <tr>
-            <td>reason : </td>
-            <td><?php echo  $results[0]->reason;  ?></td>
-        </tr>
-
-        <tr>
-            <td> requested_refund_amount: </td>
-            <td><?php echo $results[0]->requested_refund_amount;?></td>
-        </tr>
-        <tr>
-            <td> principal: </td>
-            <td><?php echo $results[0]->principal;?></td>
-        </tr>
-        <tr>
-            <td> tax: </td>
-            <td><?php echo $results[0]->tax;?></td>
-        </tr>
-        <tr>
-            <td> shipping_cost: </td>
-            <td><?php echo $results[0]->shipping_cost;?></td>
-        </tr>
-        
-        
-        <tr>
-            <td> shipping tax: </td>
-            <td><?php echo $results[0]->shipping_tax;?></td>
-        </tr>-->
         <tr>
             <td> shipping carrier: </td>
             <td><?php echo $results[0]->shipping_carrier;?></td>
@@ -104,12 +64,6 @@
             <td> merchant return charge: </td>
             <td><?php echo $results[0]->merchant_return_charge;?></td>
         </tr>
-        
-        
-        
-        
-        
-      
         
         <tr>
         <td colspan='2'><b>Order Item's</b></td>
@@ -130,10 +84,6 @@
             <tr>
                 <td> Merchant sku: </td>
                 <td><?php echo $data->merchant_sku;?></td>
-            </tr>
-            <tr>
-                <td> Merchant sku title : </td>
-                <td><?php echo $data->merchant_sku_title;?></td>
             </tr>
             <tr>
                 <td> Return quantity : </td>

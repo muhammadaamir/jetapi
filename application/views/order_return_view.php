@@ -16,8 +16,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <table class="table table-bordered">
           <thead>
               <tr>
-                  <th>Merchant Return Authorization Id</th>
-                  <th>Reference Return Authorization Id</th>
+                  <th>Order Id</th>
+                  <th>Tracking #</th>
+                  <th>Shipping Carrier</th>
+                  <th>Return Date</th>
                   <th>Status</th>
                   <th>Action</th>
               </tr>
@@ -27,8 +29,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         if($results){
             foreach($results as $data) {?>
                 <tr>
-                    <td><?php echo $data->merchant_return_authorization_id?></td>
-                    <td><?php echo $data->reference_return_authorization_id ?></td>
+                    <td><?php echo $data->order_id?></td>
+                    <td><?php echo $data->tracking_number ?></td>
+                    <td><?php echo $data->shipping_carrier ?></td>
+                    <td><?php echo $data->return_date ?></td>
                     <td><?php echo $data->return_status ?></td>
                     <td>
                         <a href='<?php echo "/orderreturn/orderReturnDetail/".$data->order_id ?>' class="btn btn-info" role="button">View Detail</a>
