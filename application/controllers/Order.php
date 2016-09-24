@@ -59,68 +59,7 @@ class Order extends CI_Controller {
 //        $orderId            = "7b0a97eb6f4c4b448f7ea75efefeb3a4";
         $status['status']   = $this->input->post('status');
         $orderId            = $this->input->post('id');
-        $results            = $this->OrderModel->order_detail($orderId);
-        if($status['status']== "shipped"){
-            $request["alt_order_id"] = $results[0]->alt_order_id;               
-                $dataShipments["alt_shipment_id"]           = $results[0]->merchant_order_id;
-                $dataShipments["shipment_tracking_number"]  = $results[0]->reference_order_id;
-                $dataShipments["response_shipment_date"]    = $results[0]->order_detail_request_ship_by;
-                $dataShipments["response_shipment_method"]  = $results[0]->order_detail_request_shipping_method;
-                $dataShipments["expected_delivery_date"]    = $results[0]->order_detail_request_delivery_by;
-                $dataShipments["ship_from_zip_code"]        = $results[0]->shipping_to_address_zip_code;
-                $dataShipments["carrier_pick_up_date"]      = "2016-09-24T07:41:31.2740935Z";//;$results[0]->order_transmission_date;
-                $dataShipments["carrier"]                   = $results[0]->order_detail_request_shipping_carrier;
-                    foreach ($results as $result){
-                        $shipmentItem["shipment_item_id"]               = $result->order_item_id;
-                        $shipmentItem["alt_shipment_item_id"]           = $result->order_item_id;
-                        $shipmentItem["merchant_sku"]                   = $result->merchant_sku;
-                        $shipmentItem["response_shipment_sku_quantity"] = (int)$result->request_order_quantity;
-                        $shipmentItemTmp[]                              = $shipmentItem;
-                    }
-                $dataShipments["shipment_items"]            = $shipmentItemTmp;
-                $tmp[]                  = $dataShipments;
-            $request["shipments"]   = $tmp;
-            $end_point              = "orders/" . $orderId."/shipped"; // orders/{jet_defined_order_id}/acknowledge
-        }elseif($status['status']== "returned"){
-            $request["alt_order_id"]= $results[0]->alt_order_id;               
-                $dataShipments["alt_shipment_id"]           = $results[0]->merchant_order_id;
-                    foreach ($results as $result){
-                        $shipmentItem["shipment_item_id"]               = $result->order_item_id;
-                        $shipmentItem["alt_shipment_item_id"]           = $result->order_item_id;
-                        $shipmentItem["merchant_sku"]                   = $result->merchant_sku;
-                        $shipmentItem["response_shipment_cancel_qty"]   = (int)$result->request_order_quantity;
-                        $shipmentItemTmp[]                              = $shipmentItem;
-                    }
-                $dataShipments["shipment_items"]            = $shipmentItemTmp;
-                $tmp[]                  = $dataShipments;
-            $request["shipments"]   = $tmp;
-            $end_point              = "orders/" . $orderId."/shipped";
-        }else{
-            if($status['status']    == "accepted"){
-                $orderItemAcknowledgementStatus = "fulfillable";
-                $acknowledgementStatus          = $status['status'];
-            }else{
-                $orderItemAcknowledgementStatus = "nonfulfillable - no inventory";
-                $acknowledgementStatus          = "rejected - item level error";
-            }
-            $request["acknowledgement_status"]  = $acknowledgementStatus; //this order will moved to the 'acknowledged' status
-            $request["alt_order_id"]            = $results[0]->alt_order_id;
-            foreach ($results as $result){
-                $dataItem["order_item_acknowledgement_status"]  = $orderItemAcknowledgementStatus;
-                $dataItem["order_item_id"]                      = $result->order_item_id;
-                $dataItem["alt_order_item_id"]                  = $result->order_item_id;
-                $tmp[]                                          = $dataItem;
-            }
-            $request["order_items"]             = $tmp;
-            $end_point                          = "orders/" . $orderId."/acknowledge"; // orders/{jet_defined_order_id}/acknowledge
-        }
-        $JetApi     = new JetApi();
-        $JetApi->getNewToken();
-        $token      = $JetApi->getToken();
-        $response   = $JetApi->apiPUT($end_point, $request);
-//        var_dump($response);
-//        echo json_encode($request);
-        $this->OrderModel->update_status($orderId, $status);        
+        $response = $this->OrderModel->updateRecord($status, $orderId);        
         echo json_encode($response);
     }
 }

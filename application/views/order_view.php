@@ -69,23 +69,25 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <td><?php echo $data->order_id?></td>
                     <td><?php echo date('d/m/Y h:m a', strtotime($data->order_placed_date)) ?></td>
                     <td><?php echo $data->status?></td>
-                    <td><div id="div-<?php echo $data->order_id ?>">
-                        <?php if($data->status == 'accepted'){ ?>
-                            <button type="button" class="btn btn-success order" value='shipped' order-id="<?php echo $data->order_id ?>" >Shipping</button>
-                        <?php
-                        }elseif($data->status == 'rejected'){
-                            
-                        }elseif($data->status == 'shipped'){?>
-                            <button type="button" class="btn btn-primary order" value='returned' order-id="<?php echo $data->order_id ?>" >Return</button>
-                        <?php 
-                        }elseif($data->status == 'returned'){
-                            
-                        }else{ ?>
-                            <button type="button" class="btn btn-primary order" value='accepted' order-id="<?php echo $data->order_id ?>" >Accept</button>
-                            <button type="button" class="btn btn-danger order" value='rejected' order-id="<?php echo $data->order_id ?>" >Reject</button>
-                        <?php }?>
-                        <a href='<?php echo "/order/oderDetail/".$data->order_id ?>' class="btn btn-info" role="button">View Detail</a>
-                        </div><span style="display:none" id="loader-<?php echo $data->order_id ?>"><img src="<?php echo base_url("assets/img/loader.gif"); ?>" /></span>
+                    <td>
+                        <div id="div-<?php echo $data->order_id ?>">
+                            <?php if($data->status == 'accepted'){ ?>
+                                <button type="button" class="btn btn-success order" value='shipped' order-id="<?php echo $data->order_id ?>" >Shipping</button>
+                            <?php
+                            }elseif($data->status == 'rejected'){
+
+                            }elseif($data->status == 'shipped'){?>
+                                <button type="button" class="btn btn-primary order" value='returned' order-id="<?php echo $data->order_id ?>" >Return</button>
+                            <?php 
+                            }elseif($data->status == 'returned'){
+
+                            }else{ ?>
+                                <button type="button" class="btn btn-primary order" value='accepted' order-id="<?php echo $data->order_id ?>" >Accept</button>
+                                <button type="button" class="btn btn-danger order" value='rejected' order-id="<?php echo $data->order_id ?>" >Reject</button>
+                            <?php }?>
+                            <a href='<?php echo "/order/oderDetail/".$data->order_id ?>' class="btn btn-info" role="button">View Detail</a>
+                            <span style="display:none" id="loader-<?php echo $data->order_id ?>"><img src="<?php echo base_url("assets/img/loader.gif"); ?>" /></span>
+                        </div>
                     </td>
                 <tr>
             <?php }} ?>
