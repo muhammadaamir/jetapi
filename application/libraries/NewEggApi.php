@@ -32,7 +32,7 @@ class NewEggApi
         $response= curl_exec($ch);
         $error= curl_error($ch);
         curl_close($ch);
-        if(strpos($response, 'Invalid'))                
+        if(strpos($response, 'Invalid')||  strpos($response, 'invalid'))                
             return FALSE;
         else                
             return TRUE;
