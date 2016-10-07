@@ -12,18 +12,35 @@
 
 class NewEggApi
 {
-	protected static $api_user_id   = "8AB85A988B5B0D2B5C1218B8652C32C40D1DCEE2";
-	protected static $api_secret    = "q1kFgmUO5KHoWtGcQBiadiuSlrXn9xHeYtEitdbfWheV";
+    protected static $api_user_id   = "ed5cdf174a0351a181a22a6eda5ed0a7";
+    protected static $api_secret    = "cf8ac89a-d561-4eb3-8f01-e194e94fec19";
 
-	protected static $merchant_id   = "83aed6a03a794cb7af70cab7cb01dce4";
-	protected static $api_prefix 	= 'https://merchant-api.jet.com/api/';
+//	protected static $merchant_id   = "83aed6a03a794cb7af70cab7cb01dce4";
+    protected static  $seller_id="AC4E";
+    protected static $api_prefix 	= 'https://api.newegg.com/marketplace/';
+    
+    
+    /*     
+     * authorize credentials
+     */
+    public function isValid(){
+        $endpoint="ordermgmt/servicestatus?sellerid=".$this::$seller_id;
+        $ch= curl_init($this::$api_prefix.$endpoint);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'Authorization:'.$this::$api_user_id ,'SecretKey:'.$this::$api_secret , 'Content-type: application/json','Accept: application/json') );
+        $response= curl_exec($ch);
+        $error= curl_error($ch);
+        curl_close($ch);
+        if(strpos($response, 'Invalid'))                
+            return FALSE;
+        else                
+            return TRUE;
 
-
-	/**
-	 * Refresh Jet API token
-	 **/
-	
+    }
         
+
+                
         public function getOrders(){
             
 //            $api_call_data = array();

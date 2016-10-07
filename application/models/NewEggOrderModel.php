@@ -148,5 +148,12 @@ class NewEggOrderModel extends CI_Model {
         $this->OrderModel->update_status($orderId, $status);
         return $response;
     }
+    
+    
+    
+    function isValid(){
+        $new_egg_obj= new NewEggApi();
+        return $new_egg_obj->isValid();
+    }
 
 }

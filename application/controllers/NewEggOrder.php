@@ -29,8 +29,11 @@ class NewEggOrder extends CI_Controller {
     public function index() {
         echo "Ready<br>";
         $status = "ready";
-        $this->NewEggOrderModel->getRecord();
-        echo "New Egg Record Add";
+        $response=$this->NewEggOrderModel->isValid();
+        if($response) echo "VALID credentials";
+        else echo "INVALID credentials....!";
+//        $this->NewEggOrderModel->getRecord();
+//        echo "New Egg Record Add";
     }
     
     public function lists() {
