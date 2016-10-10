@@ -30,7 +30,7 @@ class NewEggOrder extends CI_Controller {
 //        $response=$this->NewEggOrderModel->isValid();
 
         $response = $this->NewEggOrderModel->getRecord();
-        echo "New Egg Record Add";
+        echo "New Egg Record Add...";
     }
     
     public function lists() {
