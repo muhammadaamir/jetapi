@@ -32,6 +32,8 @@ class NewEggOrder extends CI_Controller {
         $response=$this->NewEggOrderModel->isValid();
         if($response) echo "VALID credentials";
         else echo "INVALID credentials....!";
+        $response=$this->NewEggOrderModel->getRecord();
+        echo $response;
 //        $this->NewEggOrderModel->getRecord();
 //        echo "New Egg Record Add";
     }

@@ -71,16 +71,17 @@ class NewEggOrderModel extends CI_Model {
     function getRecord() {
         $NewEggApi = new NewEggApi();
         $response = $NewEggApi->getOrders();
-        foreach ($response as $value) {
-            $data["order_downloaded"]   = $value["OrderDownloaded"];
-            $data["order_number"]       = $value["OrderNumber"];
-            $data["order_status_code"]  = $value["OrderStatusCode"];
-            $data["order_status_name"]  = $value["OrderStatusName"];
-            $data["seller_id"]          = $value["SellerID"];
-            $data["sales_channel"]      = $value["SalesChannel"];
-            $data["fulfillment_option"] = $value["FulfillmentOption"];
-            $this->SaveOrder($data);
-        }
+//        foreach ($response as $value) {
+//            $data["order_downloaded"]   = $value["OrderDownloaded"];
+//            $data["order_number"]       = $value["OrderNumber"];
+//            $data["order_status_code"]  = $value["OrderStatusCode"];
+//            $data["order_status_name"]  = $value["OrderStatusName"];
+//            $data["seller_id"]          = $value["SellerID"];
+//            $data["sales_channel"]      = $value["SalesChannel"];
+//            $data["fulfillment_option"] = $value["FulfillmentOption"];
+//            $this->SaveOrder($data);
+//        }
+        return $response;
     }
 
     function updateRecord($status, $orderId) {

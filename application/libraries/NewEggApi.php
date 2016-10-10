@@ -42,50 +42,35 @@ class NewEggApi
 
                 
         public function getOrders(){
-            
-//            $api_call_data = array();
-//            $api_call_data["request_ts"] = date("r", strtotime("now"));
-//
-//            $ch = curl_init($this::$api_prefix . $end_point);
-//            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-//            curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'Authorization: Bearer ' . $this->getToken() ) );
-//            //If necessary add your ssl pem: curl_setopt($ch, CURLOPT_CAINFO,'/ssl/cacert.pem');
-//            if($request){
-//                    $request = json_encode($request);                                              
-//                    curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
-//                    $api_call_data["request_data"] = (string)var_export($request, true);
-//            }
-//            $data = utf8_encode (curl_exec($ch));
-//            echo (curl_error ($ch ));
-//            $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-//            curl_close($ch);
-//
-//            $api_call_data["response_ts"] = date("r", strtotime("now"));
-//            $api_call_data["response_data"] = (string)var_export($data, true);
-//            $api_call_data["request_url"] = $this::$api_prefix . $end_point;
-//            $api_call_data["service_type"] = "Jet";
-//            $api_call_data["status_code"] = $httpcode;
-//            //SAVE $api_call_data
-//
-//            return json_decode($data);
+                        $orders_array=array("101062180","101062360","101062420","101062460");
+            for($i=0;$i<count($orders_array);$i++) {
+                $end_point="ordermgmt/orderstatus/orders/".$orders_array[$i]."?sellerid=AC4E";
+                $ch = curl_init($this::$api_prefix . $end_point);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+                curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'Authorization:'.$this::$api_user_id,'SecretKey:'.$this::$api_secret,'Content-type: application/json','Accept: application/json' ) );
+                $response = curl_exec($ch);
+                return $response;
+            }
+
                 
-            $data[] = array("OrderDownloaded"=> true,
-                "OrderNumber"=> "159243598",
-                "OrderStatusCode"=> 1,
-                "OrderStatusName"=> "PartiallyShipped",
-                "SellerID"=> "A006",
-                "SalesChannel"=>0,
-                "FulfillmentOption"=>0);
-        
-            $data[] = array("OrderDownloaded"=> true,
-                "OrderNumber"=> "159243599",
-                "OrderStatusCode"=> 2,
-                "OrderStatusName"=> "Shipped",
-                "SellerID"=> "A006",
-                "SalesChannel"=>0,
-                "FulfillmentOption"=>1);
-            
-            return $data;
+//            $data[] = array("OrderDownloaded"=> true,
+//                "OrderNumber"=> "159243598",
+//                "OrderStatusCode"=> 1,
+//                "OrderStatusName"=> "PartiallyShipped",
+//                "SellerID"=> "A006",
+//                "SalesChannel"=>0,
+//                "FulfillmentOption"=>0);
+//        
+//            $data[] = array("OrderDownloaded"=> true,
+//                "OrderNumber"=> "159243599",
+//                "OrderStatusCode"=> 2,
+//                "OrderStatusName"=> "Shipped",
+//                "SellerID"=> "A006",
+//                "SalesChannel"=>0,
+//                "FulfillmentOption"=>1);
+//            
+//            return $data;
         }
         
         public function orderUpdate($orderId, $status){
