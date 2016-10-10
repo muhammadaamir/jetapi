@@ -16,8 +16,8 @@ class NewEggApi
     protected static $api_secret    = "cf8ac89a-d561-4eb3-8f01-e194e94fec19";
 
 //	protected static $merchant_id   = "83aed6a03a794cb7af70cab7cb01dce4";
-    protected static  $seller_id="AC4E";
-    protected static $api_prefix 	= 'https://api.newegg.com/marketplace/';
+    protected static  $seller_id    = "AC4E";
+    protected static $api_prefix    = 'https://api.newegg.com/marketplace/';
     
     
     /*     
@@ -28,7 +28,7 @@ class NewEggApi
         $ch= curl_init($this::$api_prefix.$endpoint);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'Authorization:'.$this::$api_user_id ,'SecretKey:'.$this::$api_secret , 'Content-type: application/json','Accept: application/json') );
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'Authorization:'.self::$api_user_id ,'SecretKey:'.$this::$api_secret , 'Content-type: application/json','Accept: application/json') );
         $response= curl_exec($ch);
         $error= curl_error($ch);
         curl_close($ch);
@@ -41,37 +41,28 @@ class NewEggApi
         
 
                 
-        public function getOrders(){
-                        $orders_array=array("101062180","101062360","101062420","101062460");
-            for($i=0;$i<count($orders_array);$i++) {
-                $end_point="ordermgmt/orderstatus/orders/".$orders_array[$i]."?sellerid=AC4E";
-                $ch = curl_init($this::$api_prefix . $end_point);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-                curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'Authorization:'.$this::$api_user_id,'SecretKey:'.$this::$api_secret,'Content-type: application/json','Accept: application/json' ) );
-                $response = curl_exec($ch);
-                return $response;
-            }
+    public function getOrders($orderId, $end_point){
+        
+        $end_point = $end_point.$orderId."?sellerid=".self::$seller_id;
+        $ch = curl_init(self::$api_prefix . $end_point);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 
+            'Authorization:'.self::$api_user_id,
+            'SecretKey:'.self::$api_secret,
+            'Content-Type: application/json',
+            'Accept: application/json' ) );
+        $data =  curl_exec($ch);
 
-                
-//            $data[] = array("OrderDownloaded"=> true,
-//                "OrderNumber"=> "159243598",
-//                "OrderStatusCode"=> 1,
-//                "OrderStatusName"=> "PartiallyShipped",
-//                "SellerID"=> "A006",
-//                "SalesChannel"=>0,
-//                "FulfillmentOption"=>0);
-//        
-//            $data[] = array("OrderDownloaded"=> true,
-//                "OrderNumber"=> "159243599",
-//                "OrderStatusCode"=> 2,
-//                "OrderStatusName"=> "Shipped",
-//                "SellerID"=> "A006",
-//                "SalesChannel"=>0,
-//                "FulfillmentOption"=>1);
-//            
-//            return $data;
-        }
+        $data = preg_replace('/: /', ':', $data);
+        $data = preg_replace('/, /', ',', $data);
+        $data = preg_replace('/[^A-Za-z0-9\- :,\{\}"]/', '', $data);
+        $data = preg_replace('/\{ /', '', $data);
+        $data = '{'. $data;
+        $data = json_decode($data, true);
+        
+        return $data;
+    }
         
         public function orderUpdate($orderId, $status){
             

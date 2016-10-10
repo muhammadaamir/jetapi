@@ -51,6 +51,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
               <tr>
                   <th>Order Id</th>
                   <th>Status</th>
+                  <th>Seller Id</th>
                   <th>Action</th>
               </tr>
           </thead>
@@ -62,6 +63,25 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <td><?php echo $data->order_number?></td>
                     <td><?php echo $data->order_status_name?></td>
                     <td><?php echo $data->seller_id ?></td>
+                    <td>
+                        <div id="div-<?php echo $data->order_number ?>">
+                            <?php if($data->order_status_code == 'accepted'){ ?>
+                                <button type="button" class="btn btn-success order" value='shipped' order-id="<?php echo $data->order_number ?>" >Shipping</button>
+                            <?php
+                            }elseif($data->order_status_code == 'rejected'){
+
+                            }elseif($data->order_status_code == 'shipped'){?>
+                            
+                            <?php
+
+                            }else{ ?>
+                                <button type="button" class="btn btn-primary order" value='accepted' order-id="<?php echo $data->order_number ?>" >Accept</button>
+                                <button type="button" class="btn btn-danger order" value='rejected' order-id="<?php echo $data->order_number ?>" >Reject</button>
+                            <?php }?>
+                            <a href='<?php echo "/order/oderDetail/".$data->order_number ?>' class="btn btn-info" role="button">View Detail</a>
+                            <span style="display:none" id="loader-<?php echo $data->order_number ?>"><img src="<?php echo base_url("assets/img/loader.gif"); ?>" /></span>
+                        </div>
+                    </td>
                 <tr>
             <?php }} ?>
         </table>

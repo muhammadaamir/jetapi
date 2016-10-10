@@ -27,20 +27,15 @@ class NewEggOrder extends CI_Controller {
     }
 
     public function index() {
-        echo "Ready<br>";
-        $status = "ready...";
-        $response=$this->NewEggOrderModel->isValid();
-        if($response) echo "VALID credentials";
-        else echo "INVALID credentials....!";
-        $response=$this->NewEggOrderModel->getRecord();
-        echo $response;
-//        $this->NewEggOrderModel->getRecord();
-//        echo "New Egg Record Add";
+//        $response=$this->NewEggOrderModel->isValid();
+
+        $response = $this->NewEggOrderModel->getRecord();
+        echo "New Egg Record Add";
     }
     
     public function lists() {
         $config = array();
-        $config["base_url"] = base_url() . "neweggorder/lists";
+        $config["base_url"] = base_url() . "NewEggOrder/lists";
         $config["total_rows"] = $this->NewEggOrderModel->record_count();
         $config["per_page"] = 10;
         $config["uri_segment"] = 3;
