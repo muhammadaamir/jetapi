@@ -62,92 +62,36 @@ class NewEggOrderModel extends CI_Model {
 
     function checkOrderIdExist($orderId) {
         $this->db->select("*");
-        $this->db->from('order_detail');
-        $this->db->where('order_id', $orderId);
+        $this->db->from('new_egg_order');
+        $this->db->where('order_number', $orderId);
         $query = $this->db->get();
         return $query->result();
     }
 
     function getRecord() {
+        $end_point = "ordermgmt/orderstatus/orders/";
+        $orderIds = array("101062180","101062360","101062420","101062460");
         $NewEggApi = new NewEggApi();
-        $response = $NewEggApi->getOrders();
-//        foreach ($response as $value) {
-//            $data["order_downloaded"]   = $value["OrderDownloaded"];
-//            $data["order_number"]       = $value["OrderNumber"];
-//            $data["order_status_code"]  = $value["OrderStatusCode"];
-//            $data["order_status_name"]  = $value["OrderStatusName"];
-//            $data["seller_id"]          = $value["SellerID"];
-//            $data["sales_channel"]      = $value["SalesChannel"];
-//            $data["fulfillment_option"] = $value["FulfillmentOption"];
-//            $this->SaveOrder($data);
-//        }
-        return $response;
+        foreach ($orderIds as $orderId) {
+            $value = $NewEggApi->getOrders($orderId, $end_point);
+            $checkOrderIdExist = $this->checkOrderIdExist($orderId);
+            if(!count($checkOrderIdExist)){
+                $data["order_number"]       = $value["OrderNumber"];
+                $data["seller_id"]          = $value["SellerID"];
+                $data["order_status_code"]  = $value["OrderStatusCode"];
+                $data["order_status_name"]  = $value["OrderStatusName"];
+                $data["order_downloaded"]   = $value["OrderDownloaded"];
+        //            $data["sales_channel"]      = $value["SalesChannel"];
+        //            $data["fulfillment_option"] = $value["FulfillmentOption"];
+                $this->SaveOrder($data);
+            }
+        }
+        return true;
     }
 
     function updateRecord($status, $orderId) {
-        $d = new DateTime();
-        $d->add(new DateInterval('P2D'));
-        $results = $this->OrderModel->order_detail($orderId);
-        if ($status['status'] == "shipped") {
-            $request["alt_order_id"] = $results[0]->alt_order_id;
-            $dataShipments["alt_shipment_id"] = $results[0]->merchant_order_id;
-            $dataShipments["shipment_tracking_number"] = $results[0]->reference_order_id;
-            $dataShipments["response_shipment_date"] = $results[0]->order_detail_request_ship_by;
-            $dataShipments["response_shipment_method"] = $results[0]->order_detail_request_shipping_method;
-            $dataShipments["expected_delivery_date"] = $results[0]->order_detail_request_delivery_by;
-            $dataShipments["ship_from_zip_code"] = $results[0]->shipping_to_address_zip_code;
-            $dataShipments["carrier_pick_up_date"] = $d->format('Y-m-d\TH:i:s.Z') . "13Z"; //"2016-09-24T07:41:31.2740935Z";//;$results[0]->order_transmission_date;
-            $dataShipments["carrier"] = $results[0]->order_detail_request_shipping_carrier;
-            foreach ($results as $result) {
-                $shipmentItem["shipment_item_id"] = $result->order_item_id;
-                $shipmentItem["alt_shipment_item_id"] = $result->order_item_id;
-                $shipmentItem["merchant_sku"] = $result->merchant_sku;
-                $shipmentItem["response_shipment_sku_quantity"] = (int) $result->request_order_quantity;
-                $shipmentItemTmp[] = $shipmentItem;
-            }
-            $dataShipments["shipment_items"] = $shipmentItemTmp;
-            $tmp[] = $dataShipments;
-            $request["shipments"] = $tmp;
-            $end_point = "orders/" . $orderId . "/shipped"; // orders/{jet_defined_order_id}/acknowledge
-        } elseif ($status['status'] == "returned") {
-            $request["alt_order_id"] = $results[0]->alt_order_id;
-            $dataShipments["alt_shipment_id"] = $results[0]->merchant_order_id;
-            foreach ($results as $result) {
-                $shipmentItem["shipment_item_id"] = $result->order_item_id;
-                $shipmentItem["alt_shipment_item_id"] = $result->order_item_id;
-                $shipmentItem["merchant_sku"] = $result->merchant_sku;
-                $shipmentItem["response_shipment_cancel_qty"] = (int) $result->request_order_quantity;
-                $shipmentItemTmp[] = $shipmentItem;
-            }
-            $dataShipments["shipment_items"] = $shipmentItemTmp;
-            $tmp[] = $dataShipments;
-            $request["shipments"] = $tmp;
-            $end_point = "orders/" . $orderId . "/shipped";
-        } else {
-            if ($status['status'] == "accepted") {
-                $orderItemAcknowledgementStatus = "fulfillable";
-                $acknowledgementStatus = $status['status'];
-            } else {
-                $orderItemAcknowledgementStatus = "nonfulfillable - no inventory";
-                $acknowledgementStatus = "rejected - item level error";
-            }
-            $request["acknowledgement_status"] = $acknowledgementStatus; //this order will moved to the 'acknowledged' status
-            $request["alt_order_id"] = $results[0]->alt_order_id;
-            foreach ($results as $result) {
-                $dataItem["order_item_acknowledgement_status"] = $orderItemAcknowledgementStatus;
-                $dataItem["order_item_id"] = $result->order_item_id;
-                $dataItem["alt_order_item_id"] = $result->order_item_id;
-                $tmp[] = $dataItem;
-            }
-            $request["order_items"] = $tmp;
-            $end_point = "orders/" . $orderId . "/acknowledge"; // orders/{jet_defined_order_id}/acknowledge
-        }
-        $JetApi = new JetApi();
-        $JetApi->getNewToken();
-        $token = $JetApi->getToken();
-        $response = $JetApi->apiPUT($end_point, $request);
-        $this->OrderModel->update_status($orderId, $status);
-        return $response;
+        
+        return $orderId;
     }
     
     
