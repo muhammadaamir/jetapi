@@ -16,7 +16,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             var statusValue = $(this).val();
 //            alert(id );
             $.ajax({
-                url: '<?php echo site_url('order/updateOrder'); ?>',
+                url: '<?php echo site_url('NewEggOrder/updateOrder'); ?>',
                 type: 'POST',
                 data: {
                     status: statusValue,
@@ -29,8 +29,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 success: function(data) {
 //                    
                     var data = JSON.stringify(data);
-//                    alert(data);
-                    location.reload();
+                    alert(data);
+//                    location.reload();
                     $('#loader-'+id).hide();
                 },
                 error: function(){
@@ -46,7 +46,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  <div id="container" style="padding: 50px">
     <h1>New Egg Orders</h1>
     <div class="table">
-        <table class="table table-bordered">
+        <table class="table table-striped table-hover">
           <thead>
               <tr>
                   <th>Order Id</th>
@@ -65,19 +65,25 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <td><?php echo $data->seller_id ?></td>
                     <td>
                         <div id="div-<?php echo $data->order_number ?>">
-                            <?php if($data->order_status_code == 'accepted'){ ?>
+                            <?php
+                            $status=$data->order_status_name;
+                            if($status == 'Shipped'){ ?>
                                 <button type="button" class="btn btn-success order" value='shipped' order-id="<?php echo $data->order_number ?>" >Shipping</button>
                             <?php
-                            }elseif($data->order_status_code == 'rejected'){
+                            }elseif($status == 'Invoiced'){
 
-                            }elseif($data->order_status_code == 'shipped'){?>
-                            
+                            }elseif($status=='Unshipped'||$status=='Partiallyshipped'){?>
+                            <button type="button" class="btn btn-danger order" value='cancel' order-id="<?php echo $data->order_number ?>" >Cancel Order</button>
+                            <button type="button" class="btn btn-primary order" value='ship' order-id="<?php echo $data->order_number ?>" >Ship Order</button>
                             <?php
 
-                            }else{ ?>
-                                <button type="button" class="btn btn-primary order" value='accepted' order-id="<?php echo $data->order_number ?>" >Accept</button>
-                                <button type="button" class="btn btn-danger order" value='rejected' order-id="<?php echo $data->order_number ?>" >Reject</button>
-                            <?php }?>
+                            }elseif($status=='Void'){ ?>
+                                <button type="button" class="btn btn-primary order" value='ship' order-id="<?php echo $data->order_number ?>" >Ship Order</button>
+                            <?php }
+                            else{?>
+                            <?php
+                            }
+                            ?>
                             <a href='<?php echo "/order/oderDetail/".$data->order_number ?>' class="btn btn-info" role="button">View Detail</a>
                             <span style="display:none" id="loader-<?php echo $data->order_number ?>"><img src="<?php echo base_url("assets/img/loader.gif"); ?>" /></span>
                         </div>

@@ -38,6 +38,16 @@ class NewEggApi
             return TRUE;
 
     }
+    
+    public function create_json($data){
+        $data = preg_replace('/: /', ':', $data);
+        $data = preg_replace('/, /', ',', $data);
+        $data = preg_replace('/[^A-Za-z0-9\- :,\{\}"]/', '', $data);
+        $data = preg_replace('/\{ /', '', $data);
+        $data = '{'. $data;
+        $data = json_decode($data, true);
+        return $data;
+    }
         
 
                 
@@ -54,21 +64,31 @@ class NewEggApi
             'Accept: application/json' ) );
         $data =  curl_exec($ch);
 
-        $data = preg_replace('/: /', ':', $data);
-        $data = preg_replace('/, /', ',', $data);
-        $data = preg_replace('/[^A-Za-z0-9\- :,\{\}"]/', '', $data);
-        $data = preg_replace('/\{ /', '', $data);
-        $data = '{'. $data;
-        $data = json_decode($data, true);
-        
-        return $data;
+        return $this->create_json($data);
     }
         
-        public function orderUpdate($orderId, $status){
+        public function orderUpdate($endpoint, $status){
+            $endpoint=$endpoint.self::$seller_id."&version=304";
+            $action= ($status=='cancel')? $action='1' :$action='2';
+            $request_body=array(
+                "Action"=>$action,
+                "Value"=>"24"
+            );
+            $request_body=  json_encode($request_body);
+            $ch=  curl_init(self::$api_prefix.$endpoint);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $request_body);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array( 
+                'Authorization:'.self::$api_user_id,
+                'SecretKey:'.self::$api_secret,
+                'Content-Type: application/json',
+                'Accept: application/json' ) );
+            $data=  curl_exec($ch);
+            return json_decode($data);
             
-            $response = true; //call api function
-            
-            return $response;
+//            return $this->create_json($data);
         }
         
         public function orderShipped($orderId){
