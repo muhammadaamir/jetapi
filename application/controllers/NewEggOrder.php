@@ -56,10 +56,10 @@ class NewEggOrder extends CI_Controller {
     }
     
     public function updateOrder(){
-//        $status   = $this->input->post('status');
-//        $orderId  = $this->input->post('id');
-        $status='cancel';
-        $orderId="101062460";
+        $status   = $this->input->post('status');
+        $orderId  = $this->input->post('id');
+//        $status='cancel';
+//        $orderId="101062460";
         $response = $this->NewEggOrderModel->updateRecord($status, $orderId);   
         if($response){
             echo $response;
