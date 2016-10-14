@@ -99,9 +99,9 @@ class NewEggOrderModel extends CI_Model {
 
     function updateRecord($status, $orderId) {
         error_reporting(0);
-        $endpoint="ordermgmt/orderstatus/orders/".$orderId."?sellerid=";
+        $endpoint="ordermgmt/orderstatus/orders/";
         $NewEggApi= new NewEggApi();
-        $response=$NewEggApi->orderUpdate($endpoint, $status);
+        $response=$NewEggApi->orderUpdate($endpoint, $status, $orderId);
         $new_status=$response[0]->Result->OrderStatus;
         if($new_status){
             $this->update_status($orderId);

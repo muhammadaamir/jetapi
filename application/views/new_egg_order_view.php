@@ -16,26 +16,30 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             var statusValue = $(this).val();
 //            alert(id );
             $.ajax({
-                url: '<?php echo site_url('NewEggOrder/updateOrder'); ?>',
+                url: '<?php echo base_url('NewEggOrder/updateOrder'); ?>',
                 type: 'POST',
+                crossDomain:true,
+                xhrFields:{withCredentials:true},
                 data: {
                     status: statusValue,
                     id:id
                 },
-                dataType: 'json',
                 beforeSend: function (xhr) {
                         $('#loader-'+id).show();
                     },
                 success: function(data) {
 //                    
-                    var data = JSON.stringify(data);
+//                    var data = JSON.stringify(data);
                     alert(data);
+                    console.log("     order# "+id+" Status: "+statusValue);
 //                    location.reload();
                     $('#loader-'+id).hide();
                 },
-                error: function(){
-            $('#loader-'+id).hide();
-                  alert("error");
+                error: function(err){
+                    $('#loader-'+id).hide();
+                    slert(err+" in error");
+                
+               
                 }
             });
         });

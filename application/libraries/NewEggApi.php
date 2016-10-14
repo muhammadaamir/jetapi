@@ -67,13 +67,43 @@ class NewEggApi
         return $this->create_json($data);
     }
         
-        public function orderUpdate($endpoint, $status){
-            $endpoint=$endpoint.self::$seller_id."&version=304";
+        public function orderUpdate($endpoint, $status,$orderId){
+            $endpoint=$endpoint.$orderId."?sellerid=".self::$seller_id."&version=304";
             $action= ($status=='cancel')? $action='1' :$action='2';
-            $request_body=array(
-                "Action"=>$action,
-                "Value"=>"24"
-            );
+            if($action=='1'){
+                $request_body=array(
+                    'Action'=>$action,
+                    'Value'=>'24'
+                );
+            }
+            else{
+                $request_body=array(
+                    'Action'=>$action,
+                    'Value' => array(
+                        'Shipment'=>array(
+                            'Header'=>array(
+                                "SellerID"=>self::$seller_id,
+                                "SONumber"=>$orderId
+                            ),
+                            'PackageList'=>array(
+                                'Package'=>array(
+                                    'TrackingNumber'=>'',
+                                    'ShipCarrier'=>'',
+                                    'ShipService'=>'',
+                                    'ItemList'=>array(
+                                        'Item'=>array(
+                                            'SellerPartNumber'=>'',
+                                            'ShippedQty'=>''
+                                        )
+                                        
+                                    )
+                                )
+                            )
+                        )
+                    ),
+                    
+                );
+            }
             $request_body=  json_encode($request_body);
             $ch=  curl_init(self::$api_prefix.$endpoint);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
