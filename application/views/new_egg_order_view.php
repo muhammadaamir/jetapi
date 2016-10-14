@@ -88,7 +88,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             <?php
                             }
                             ?>
-                            <a href='<?php echo "/order/oderDetail/".$data->order_number ?>' class="btn btn-info" role="button">View Detail</a>
+                            <a href='<?php echo "oderDetail/".$data->order_number ?>' class="btn btn-info" role="button">View Detail</a>
                             <span style="display:none" id="loader-<?php echo $data->order_number ?>"><img src="<?php echo base_url("assets/img/loader.gif"); ?>" /></span>
                         </div>
                     </td>

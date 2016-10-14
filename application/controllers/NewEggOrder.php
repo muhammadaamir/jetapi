@@ -50,9 +50,10 @@ class NewEggOrder extends CI_Controller {
     }
     
     public function oderDetail($orderId) {
-        
-        $data["results"] = $this->NewEggOrderModel->order_detail($orderId);
-        $this->load->view("order_detail_view", $data);
+//        $orderId="101062460";
+        $data["results"] = $this->NewEggOrderModel->order_details($orderId);
+//        print_r($data);
+        $this->load->view("new_egg_order_detail", $data);
     }
     
     public function updateOrder(){
@@ -66,4 +67,7 @@ class NewEggOrder extends CI_Controller {
         }
         else echo "could not update!";
     }
+    
+    
+    
 }

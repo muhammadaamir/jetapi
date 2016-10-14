@@ -113,7 +113,12 @@ class NewEggOrderModel extends CI_Model {
     }
     
     
-    
+    function order_details($orderId){
+        $NewEggApi= new NewEggApi();
+        $response=$NewEggApi->orderDetails($orderId);
+        return $response;
+    }
+            
     function isValid(){
         $new_egg_obj= new NewEggApi();
         return $new_egg_obj->isValid();
