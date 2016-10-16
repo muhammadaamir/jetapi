@@ -4,8 +4,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>Jet Api</title>
-        <link rel="stylesheet" href="<?php echo base_url("assets/css/bootstrap.css"); ?>" />
+	<title>NewEgg</title>
+        <link rel="stylesheet" href="<?php echo base_url("/assets/css/bootstrap.css"); ?>" />
         <script type="text/javascript" src="<?php echo base_url("assets/js/jquery.min.js"); ?>"></script>
         <script type="text/javascript" src="<?php echo base_url("assets/js/bootstrap.js"); ?>"></script>
         
@@ -46,7 +46,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  <div id="container" style="padding: 50px">
     <h1>New Egg Orders</h1>
     <div class="table">
-        <table class="table table-bordered">
+        <table class="table table-striped table-hover ">
           <thead>
               <tr>
                   <th>Order Id</th>
