@@ -139,26 +139,63 @@ class NewEggApi
         return $this->create_json($data);
     }
 
-
-    public function orderShipped($orderId){
-            
-            $response = true; //call api function
-            
-            return $response;
-        }
-        
-        public function orderCancel($orderId){
-            
-            $response = true; //call api function
-            
-            return $response;
-        }
-        
-        public function orderStatus($status){
-            
-            
-            return $data;
-        }
+    public function confirmOrder($orderId){
+        $endpoint="ordermgmt/orderstatus/orders/confirmation?sellerid=".self::$seller_id;
+        $request_body=  array(
+            'OperationType'=>'OrderConfirmationRequest',
+            'RequestBody'=>array(
+                'DownloadedOrderList'=>array(
+                    'OrderNumber'=>$orderId
+                )
+            )
+        );
+        $request_body=  json_encode($request_body);
+        $ch=  curl_init(self::$api_prefix.$endpoint);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $request_body);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array( 
+            'Authorization:'.self::$api_user_id,
+            'SecretKey:'.self::$api_secret,
+            'Content-Type: application/json',
+            'Accept: application/json' ) );
+        $data=  curl_exec($ch);
+        return $this->create_json($data);     
+    }
+    
+    
+    public function removeItem($orderId,$SPartNumber){
+        $endpoint="ordermgmt/killitem/orders/".$orderId."?sellerid=".self::$seller_id;
+        $request_body=array(
+            'OperationType'=>'KillItemRequest',
+            'RequestBody'=>array(
+                'KillItem'=>array(
+                    'Order'=>array(
+                        'ItemList'=>array(
+                            'Item'=>array(
+                                'SellerPartNumber'=>$SPartNumber
+                            )
+                        )
+                    )
+                )
+            )
+        );
+        $request_body=  json_encode($request_body);
+        $ch=  curl_init(self::$api_prefix.$endpoint);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $request_body);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array( 
+            'Authorization:'.self::$api_user_id,
+            'SecretKey:'.self::$api_secret,
+            'Content-Type: application/json',
+            'Accept: application/json' ) );
+        $data=  curl_exec($ch);
+        return $this->create_json($data);    
+    }
+    
 }
 
 

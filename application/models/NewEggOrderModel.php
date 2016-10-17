@@ -112,10 +112,24 @@ class NewEggOrderModel extends CI_Model {
         }
     }
     
-    
     function order_details($orderId){
         $NewEggApi= new NewEggApi();
         $response=$NewEggApi->orderDetails($orderId);
+        return $response;
+    }
+    
+    function confirm_order($orderId){
+        $NewEggApi= new NewEggApi();
+        $response=$NewEggApi->confirmOrder($orderId);
+        return $response;
+    }
+    
+    function remove_item($orderId){
+        $NewEggApi=new NewEggApi();
+        $SPartNumber_response=$this->order_detail($orderId);
+        $SPartNumber= $SPartNumber_response["ResponseBody"]["OrderInfoList"][0]
+                        ["ItemInfoList"][0]["SellerPartNumber"];
+        $response=$NewEggApi->removeItem($orderId,$SPartNumber);
         return $response;
     }
             

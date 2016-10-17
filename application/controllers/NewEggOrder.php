@@ -65,9 +65,27 @@ class NewEggOrder extends CI_Controller {
         if($response){
             echo $response;
         }
-        else echo "could not update!";
+        else echo "Could not update!";
     }
     
+    
+    public function confirmOrder(){
+        $orderId= $this->input->post('id');
+        $response=$this->NewEggOrderModel->confirm_order($orderId);
+        if($response){
+            echo $response;
+        }
+        else echo "Couldn't perform Order Confirmation";
+    }
+    
+    public function removeItem(){
+        $orderId=  $this->input->post('id');
+        $response=$this->NewEggOrderModel->remove_item($orderId);
+        if($response){
+            echo $response;
+        }
+        else echo "Could not remove item";
+    }
     
     
 }
