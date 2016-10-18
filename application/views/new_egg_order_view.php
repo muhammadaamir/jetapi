@@ -65,23 +65,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             foreach($results as $data) {?>
                 <tr>
                     <td><?php echo $data->order_number?></td>
-                    <td><?php echo $data->order_status_name?></td>
+                    <td><?php echo $data->order_status_description?></td>
                     <td><?php echo $data->seller_id ?></td>
                     <td>
                         <div id="div-<?php echo $data->order_number ?>">
                             <?php
-                            $status=$data->order_status_name;
+                            $status=$data->order_status_description;
                             if($status == 'Shipped'){ ?>
                                 <button type="button" class="btn btn-success order" value='shipped' order-id="<?php echo $data->order_number ?>" >Shipping</button>
                             <?php
                             }elseif($status == 'Invoiced'){
 
-                            }elseif($status=='Unshipped'||$status=='Partiallyshipped'){?>
+                            }elseif($status=='Unshipped'||$status=='Partially Shipped'){?>
                             <button type="button" class="btn btn-danger order" value='cancel' order-id="<?php echo $data->order_number ?>" >Cancel Order</button>
                             <button type="button" class="btn btn-primary order" value='ship' order-id="<?php echo $data->order_number ?>" >Ship Order</button>
                             <?php
 
-                            }elseif($status=='Void'){ ?>
+                            }elseif($status=='Voided'){ ?>
                                 <button type="button" class="btn btn-primary order" value='ship' order-id="<?php echo $data->order_number ?>" >Ship Order</button>
                             <?php }
                             else{?>

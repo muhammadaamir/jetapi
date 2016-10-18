@@ -1,22 +1,7 @@
 <?php
 
 class NewEggOrder extends CI_Controller {
-
-    /**
-     * Index Page for this controller.
-     *
-     * Maps to the following URL
-     * 		http://example.com/index.php/welcome
-     * 	- or -
-     * 		http://example.com/index.php/welcome/index
-     * 	- or -
-     * Since this controller is set as the default controller in
-     * config/routes.php, it's displayed at http://example.com/
-     *
-     * So any other public methods not prefixed with an underscore will
-     * map to /index.php/welcome/<method_name>
-     * @see https://codeigniter.com/user_guide/general/urls.html
-     */
+    
     function __Construct() {
         parent::__Construct();
         $this->load->database(); // load database
@@ -27,11 +12,10 @@ class NewEggOrder extends CI_Controller {
     }
 
     public function index() {
-//        $response=$this->NewEggOrderModel->isValid();
+//        $response=$this->NewEggOrderModel->is_valid();
 
-        $response = $this->NewEggOrderModel->getRecord();
-        if($response)
-            echo "New Egg Record Add...";
+        $this->NewEggOrderModel->insert_order_details();
+        echo "New Egg Record Add...";
     }
     
     public function lists() {
@@ -51,7 +35,7 @@ class NewEggOrder extends CI_Controller {
     
     public function oderDetail($orderId) {
 //        $orderId="101062460";
-        $data["results"] = $this->NewEggOrderModel->order_details($orderId);
+        $data["results"] = $this->NewEggOrderModel->get_order_detail($orderId);
 //        print_r($data);
         $this->load->view("new_egg_order_detail", $data);
     }
