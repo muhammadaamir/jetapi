@@ -108,26 +108,31 @@ class NewEggOrderModel extends CI_Model {
         $request_fields=array(
             "status"=>$status,
             "seller_part_number"=>$shipping_details[0]->seller_part_number,
-            "shipped_qty"=>$shipping_details[0]->shipped_quantity );
+            "shipped_qty"=>(int)$shipping_details[0]->shipped_quantity );
        
         $endpoint="ordermgmt/orderstatus/orders/";
         $NewEggApi= new NewEggApi();
         $response=$NewEggApi->orderUpdate($endpoint, $orderId, $request_fields);
+//        if($response)            return TRUE;
+//        else {
+//            return "seller part num: ".$request_fields['shipped_qty']." and its tytpe ".gettype($request_fields['shipped_qty']);
+//         }
         
-        $new_status=$response[0]->Result->OrderStatus;
+        $new_status=$response["Result"]["OrderStatus"];
         if($new_status){
             $this->update_status($orderId,$status);
             return "Status updated: ".$new_status;
         }
         else{
-            return $response[0]->Message;
+            return $response["Message"];
         }
     }
-    // on confirm_order .. call insert_order_details to save the details in db
-    public function insert_order_details($orderId){
-//        $orderIds = array("101062180","101062360","101062420","101062460");
+
+    public function insert_order_details(){
+        $orderIds = array("101062180","101062360","101062420","101062460","101355900","101355920","101355980",
+                             "101356020","101356060","101356080","101356140","101356200","101356260","101356280");
         $NewEggApi = new NewEggApi();
-//        foreach ($orderIds as $orderId) {
+        foreach ($orderIds as $orderId) {
             $value=$NewEggApi->orderDetails($orderId);
             $neweggorder["order_number"]        = $value["ResponseBody"]["OrderInfoList"][0]["OrderNumber"];
             $neweggorder["seller_id"]           = $value["SellerID"];
@@ -183,20 +188,18 @@ class NewEggOrderModel extends CI_Model {
             if(!count($checkOrderIdExist)){
                 $this->SaveOrderDetail($neweggorder, $iteminfo, $pkginfo, $pkgiteminfo);
             }
-//        }     foreach end
+        }   
         return true;
     }
     
     public function confirm_order($orderId){
-        error_reporting(0);
         $NewEggApi= new NewEggApi();
         $response=$NewEggApi->confirmOrder($orderId);
         if(($response["NeweggAPIResponse"]["IsSuccess"])=="true"){
-            $this->insert_order_details($orderId);
-            return "Order Confirmation Succeeded and inserted in db";
+            return "Order Confirmation Succeeded";
         }
         else{
-            return "Order Confirmation failed!";
+            return "Order Confirmation Failed! ".$response[0]["Message"];
         }
     }
     

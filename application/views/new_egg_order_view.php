@@ -30,7 +30,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 success: function(data) {
 //                    
 //                    var data = JSON.stringify(data);
-                    alert(data);
+                    alert(data+ "in success");
                     console.log("     order# "+id+" Status: "+statusValue);
 //                    location.reload();
                     $('#loader-'+id).hide();
@@ -54,7 +54,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     id:id
                 },
                 success:function(data){
-                    alert(data+" in success");
+                    $('.confirm-order[value='+id+']').hide();
+                    alert(data+" in success ");
                 },
                 error: function(err){
                     alert(err+" in error");
@@ -91,17 +92,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             <?php
                             $status=$data->order_status_description;
                             if($status == 'Shipped'){ ?>
-                                <button type="button" class="btn btn-success order" value='shipped' order-id="<?php echo $data->order_number ?>" >Shipping</button>
+<!--                              <button type="button" class="btn btn-success order" value='shipped' order-id="<?php //echo $data->order_number ?>" >Shipping</button>-->
                             <?php
                             }elseif($status == 'Invoiced'){
 
                             }elseif($status=='Unshipped'||$status=='Partially Shipped'){?>
-                            <button type="button" class="btn btn-danger order" value='cancel' order-id="<?php echo $data->order_number ?>" >Cancel Order</button>
-                            <button type="button" class="btn btn-primary order" value='ship' order-id="<?php echo $data->order_number ?>" >Ship Order</button>
+                                <button class="btn btn-warning confirm-order " value="<?php echo $data->order_number?>">Confirm Order</button>
+                                <button type="button" class="btn btn-danger order" value='cancel' order-id="<?php echo $data->order_number ?>" >Cancel Order</button>
+                                <button type="button" class="btn btn-primary order" value='ship' order-id="<?php echo $data->order_number ?>" >Ship Order</button>
                             <?php
 
                             }elseif($status=='Voided'){ ?>
-                                <button type="button" class="btn btn-primary order" value='ship' order-id="<?php echo $data->order_number ?>" >Ship Order</button>
+<!--                                <button type="button" class="btn btn-primary order" value='ship' order-id="<?php // echo $data->order_number ?>" >Ship Order</button>-->
                             <?php }
                             else{?>
                             <?php
@@ -116,13 +118,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         </table>
         <p><?php echo $links; ?></p>
     </div>
-            
-    <div class="container" style="padding:30px">
-        <div class="row">
-            <div class="col-sm-4" style="padding:40px; width: 150px; height: 150px; background-color:lightgrey">Order : 101355900</div>
-            <div class="col-sm-2" style="padding:20px"> <button class="btn btn-info confirm-order" value="101355900">Confirm Order</button></div>
-        </div>
-    </div>
+    
     <p class="footer"></p>
  </div>
 </body>
