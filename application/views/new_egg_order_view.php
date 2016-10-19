@@ -37,10 +37,29 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 },
                 error: function(err){
                     $('#loader-'+id).hide();
-                    slert(err+" in error");
+                    alert(err+" in error");
                 
                
                 }
+            });
+        });
+        
+        
+        $(document).on('click','.confirm-order',function(){
+            var id= $(this).val();
+            $.ajax({
+                url:'<?php echo base_url('NewEggOrder/confirmOrder')?>',
+                type:'POST',
+                data: {
+                    id:id
+                },
+                success:function(data){
+                    alert(data+" in success");
+                },
+                error: function(err){
+                    alert(err+" in error");
+                }
+                        
             });
         });
         </script>
@@ -96,6 +115,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <?php }} ?>
         </table>
         <p><?php echo $links; ?></p>
+    </div>
+            
+    <div class="container" style="padding:30px">
+        <div class="row">
+            <div class="col-sm-4" style="padding:40px; width: 150px; height: 150px; background-color:lightgrey">Order : 101355900</div>
+            <div class="col-sm-2" style="padding:20px"> <button class="btn btn-info confirm-order" value="101355900">Confirm Order</button></div>
+        </div>
     </div>
     <p class="footer"></p>
  </div>

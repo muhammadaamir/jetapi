@@ -8,6 +8,19 @@ class NewEggApi
     protected static  $seller_id    = "AC4E";
     protected static $api_prefix    = 'https://api.newegg.com/marketplace/';
     
+    
+       
+    function get_tracking_num(){
+        $length=6;
+        $string="";
+        while ($length>0){
+            $string.= dechex(mt_rand(0, 15));
+            $length--;
+        }
+        return $string;
+    }
+    
+    
     /*     
      * authorize credentials
      */
@@ -58,13 +71,13 @@ class NewEggApi
 //        return $this->create_json($data);
     }
         
-    public function orderUpdate($endpoint, $status,$orderId){
+    public function orderUpdate($endpoint,$orderId,$request_fields){
         $endpoint=$endpoint.$orderId."?sellerid=".self::$seller_id."&version=304";
-        $action= ($status=='cancel')? $action='1' :$action='2';
+        $action= ($request_fields["status"]=='cancel')? $action='1' :$action='2';
         if($action=='1'){
             $request_body=array(
                 'Action'=>$action,
-                'Value'=>'24'
+                'Value'=>'72'
             );
         }
         else{
@@ -78,13 +91,13 @@ class NewEggApi
                         ),
                         'PackageList'=>array(
                             'Package'=>array(
-                                'TrackingNumber'=>'',
-                                'ShipCarrier'=>'',
-                                'ShipService'=>'',
+                                'TrackingNumber'=>  $this->get_tracking_num(),
+                                'ShipCarrier'=>'TCS',
+                                'ShipService'=>'ground',
                                 'ItemList'=>array(
                                     'Item'=>array(
-                                        'SellerPartNumber'=>'',
-                                        'ShippedQty'=>''
+                                        'SellerPartNumber'=>$request_fields["seller_part_number"],
+                                        'ShippedQty'=>$request_fields["shipped_qty"]
                                     )
 
                                 )

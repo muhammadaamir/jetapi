@@ -5,7 +5,7 @@ class NewEggOrderModel extends CI_Model {
     public function __construct() {
         parent::__construct();
     }
-    
+
     public function get_order_detail($orderId) {
         $this->db->select('*');
         $this->db->from('neweggorders');
@@ -52,16 +52,23 @@ class NewEggOrderModel extends CI_Model {
         return $query->result();
     }
     
-    function update_status($orderId,$status,$ship_date) {
+    function update_status($orderId,$status) {
 
         $end_point = "ordermgmt/orderstatus/orders/";
         $NewEggApi= new NewEggApi();
-        $value = $NewEggApi->getOrders($orderId, $end_point);
+        $response = $NewEggApi->orderDetails($orderId);
         
-        $this->db->set('order_status',$value['OrderStatusCode']);
-        $this->db->set('order_status_description',$value['OrderStatusName']);
+        $this->db->set('order_status',$response["ResponseBody"]["OrderInfoList"][0]["OrderStatus"]);
+        $this->db->set('order_status_description',$response["ResponseBody"]["OrderInfoList"][0]["OrderStatusDescription"]);
         $this->db->where('order_number', $orderId);
         $this->db->update('neweggorders');
+        
+        $this->db->set('status',$response["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][0]["Status"]);
+        $this->db->set('status_description',$response["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][0]["StatusDescription"]);
+        $this->db->set('shipped_quantity',$response["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][0]["ShippedQty"]);
+        $this->db->where('order_number', $orderId);
+        $this->db->update('newegg_item_info');
+        
         if($status=='cancel'){
            
             $pkg_info_fields=array('pkg_type','ship_carrier','ship_service','tracking_number','ship_date');
@@ -79,21 +86,37 @@ class NewEggOrderModel extends CI_Model {
             $this->db->update('newegg_pkg_item_info');
         }
         else{
-            $this->db->set('ship_date',$ship_date);
+            $this->db->set('pkg_type',$response["ResponseBody"]["OrderInfoList"][0]["PackageInfoList"][0]["PackageType"]);
+            $this->db->set('ship_carrier',$response["ResponseBody"]["OrderInfoList"][0]["PackageInfoList"][0]["ShipCarrier"]);
+            $this->db->set('ship_service',$response["ResponseBody"]["OrderInfoList"][0]["PackageInfoList"][0]["ShipService"]);
+            $this->db->set('tracking_number',$response["ResponseBody"]["OrderInfoList"][0]["PackageInfoList"][0]["TrackingNumber"]);
+            $this->db->set('ship_date',$response["ResponseBody"]["OrderInfoList"][0]["PackageInfoList"][0]["ShipDate"]);
             $this->db->where('order_number', $orderId);
             $this->db->update('newegg_pkg_info');
+            
+            $this->db->set('seller_part_number',$response["ResponseBody"]["OrderInfoList"][0]["PackageInfoList"][0]["ItemInfoList"][0]["SellerPartNumber"]);
+            $this->db->set('mfr_part_number',$response["ResponseBody"]["OrderInfoList"][0]["PackageInfoList"][0]["ItemInfoList"][0]["MfrPartNumber"]);
+            $this->db->set('shipped_quantity',$response["ResponseBody"]["OrderInfoList"][0]["PackageInfoList"][0]["ItemInfoList"][0]["ShippedQty"]);
+            $this->db->where('order_number', $orderId);
+            $this->db->update('newegg_pkg_item_info');
         }
     }
 
     public function updateRecord($status, $orderId) {
         error_reporting(0);
+        $shipping_details=$this->get_order_detail($orderId);
+        $request_fields=array(
+            "status"=>$status,
+            "seller_part_number"=>$shipping_details[0]->seller_part_number,
+            "shipped_qty"=>$shipping_details[0]->shipped_quantity );
+       
         $endpoint="ordermgmt/orderstatus/orders/";
         $NewEggApi= new NewEggApi();
-        $response=$NewEggApi->orderUpdate($endpoint, $status, $orderId);
+        $response=$NewEggApi->orderUpdate($endpoint, $orderId, $request_fields);
+        
         $new_status=$response[0]->Result->OrderStatus;
-        $ship_date=$response[0]->Result->Shipment->PackageList[0]->ShipDate;
         if($new_status){
-            $this->update_status($orderId,$status,$ship_date);
+            $this->update_status($orderId,$status);
             return "Status updated: ".$new_status;
         }
         else{
@@ -101,10 +124,10 @@ class NewEggOrderModel extends CI_Model {
         }
     }
     // on confirm_order .. call insert_order_details to save the details in db
-    public function insert_order_details(){
-        $orderIds = array("101062180","101062360","101062420","101062460");
+    public function insert_order_details($orderId){
+//        $orderIds = array("101062180","101062360","101062420","101062460");
         $NewEggApi = new NewEggApi();
-        foreach ($orderIds as $orderId) {
+//        foreach ($orderIds as $orderId) {
             $value=$NewEggApi->orderDetails($orderId);
             $neweggorder["order_number"]        = $value["ResponseBody"]["OrderInfoList"][0]["OrderNumber"];
             $neweggorder["seller_id"]           = $value["SellerID"];
@@ -160,16 +183,20 @@ class NewEggOrderModel extends CI_Model {
             if(!count($checkOrderIdExist)){
                 $this->SaveOrderDetail($neweggorder, $iteminfo, $pkginfo, $pkgiteminfo);
             }
-        }
+//        }     foreach end
         return true;
     }
     
     public function confirm_order($orderId){
+        error_reporting(0);
         $NewEggApi= new NewEggApi();
         $response=$NewEggApi->confirmOrder($orderId);
-        if($response){
+        if(($response["NeweggAPIResponse"]["IsSuccess"])=="true"){
             $this->insert_order_details($orderId);
-            return TRUE;
+            return "Order Confirmation Succeeded and inserted in db";
+        }
+        else{
+            return "Order Confirmation failed!";
         }
     }
     

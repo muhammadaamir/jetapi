@@ -59,7 +59,7 @@ class NewEggOrder extends CI_Controller {
         if($response){
             echo $response;
         }
-        else echo "Couldn't perform Order Confirmation";
+        else echo "Error from Controller:NewEggOrder/confirmOrder <br> Couldn't perform Order Confirmation!";
     }
     
     public function removeItem(){
