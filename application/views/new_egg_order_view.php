@@ -70,11 +70,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  <div id="container" style="padding: 50px">
     <h1>New Egg Orders</h1>
     <div class="table">
-<<<<<<< HEAD
-        <table class="table table-striped table-hover ">
-=======
         <table class="table table-striped table-hover">
->>>>>>> cacfbbe11d3ddf7a3eadecc6eac87213c23487c1
           <thead>
               <tr>
                   <th>Order Id</th>

@@ -14,7 +14,6 @@ class NewEggOrder extends CI_Controller {
     public function index() {
 //        $response=$this->NewEggOrderModel->is_valid();
         
-        
         $this->NewEggOrderModel->insert_order_details();
         echo "New Egg Record Add...";
 

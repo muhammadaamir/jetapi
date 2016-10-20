@@ -46,9 +46,7 @@ class NewEggOrderModel extends CI_Model {
             foreach ($pkgiteminfo[0] as $pkgitem) {
                  $this->db->insert('newegg_pkg_item_info',$pkgitem);
             }
-        }
-            
-        
+        } 
     }
     
     function checkOrderIdExist($orderId) {
@@ -64,7 +62,6 @@ class NewEggOrderModel extends CI_Model {
     
     function update_status($orderId,$status) {
 
-        $end_point = "ordermgmt/orderstatus/orders/";
         $NewEggApi= new NewEggApi();
         $response = $NewEggApi->orderDetails($orderId);
         
@@ -80,8 +77,6 @@ class NewEggOrderModel extends CI_Model {
             $this->db->where('order_number', $orderId);
             $this->db->update('newegg_item_info');
         }
-
-        
         if($status=='cancel'){
 //           
 //            $pkg_info_fields=array('pkg_type','ship_carrier','ship_service','tracking_number','ship_date');
@@ -102,6 +97,7 @@ class NewEggOrderModel extends CI_Model {
             $pkg=$response["ResponseBody"]["OrderInfoList"][0]["PackageInfoList"];
    //         $pkgItem=$response["ResponseBody"]["OrderInfoList"][0]["PackageInfoList"][0]["ItemInfoList"];
             for($i=0;$i<count($pkg);$i++){
+                $pkginfo=array();
                 
                 $pkginfo["order_number"]            = $orderId;
                 $pkginfo["pkg_type"]                = $pkg[$i]["PackageType"];
@@ -110,18 +106,33 @@ class NewEggOrderModel extends CI_Model {
                 $pkginfo["tracking_number"]         = $pkg[$i]["TrackingNumber"];
                 $pkginfo["ship_date"]               = $pkg[$i]["ShipDate"];
                 
-                $this->db->insert('newegg_pkg_info',$pkginfo);
-                $pkginfo=  array();
+                $checkOrderIdExist = $this->checkOrderIdExist($orderId);
+                if(!count($checkOrderIdExist)){
+                    $this->db->insert('newegg_pkg_info',$pkginfo);
+                }
+                else{
+                    $this->db->where('order_number',$orderId);
+                    $this->db->update('newegg_pkg_info',$pkginfo);    
+                }
+                
                 $pkgItem=$pkg[$i]["ItemInfoList"];
                 
                 for($j=0;$j<count($pkgItem);$j++){
+                    
                     $pkgiteminfo["order_number"]        = $orderId;
                     $pkgiteminfo["seller_part_number"]  = $pkgItem[$j]["SellerPartNumber"];
                     $pkgiteminfo["mfr_part_number"]     = $pkgItem[$j]["MfrPartNumber"];
                     $pkgiteminfo["shipped_quantity"]    = $pkgItem[$j]["ShippedQty"];
                     
-                    $this->db->insert('newegg_pkg_item_info',$pkgiteminfo);
+                    if(!count($checkOrderIdExist)){
+                        $this->db->insert('newegg_pkg_item_info',$pkgiteminfo);
+                    }
+                    else{
+                        $this->db->where('order_number',$orderId);
+                        $this->db->update('newegg_pkg_item_info',$pkgiteminfo);
+                    }
                     $pkgiteminfo=array();
+                    
                 }         
             }      
         }
@@ -133,8 +144,7 @@ class NewEggOrderModel extends CI_Model {
         $request_fields=array(
             "status"=>$status,
             "seller_part_number"=>$toShip_details[0]->seller_part_number,
-            "ordered_qty"=>$toShip_details[0]->ordered_quantity 
-                );
+            "ordered_qty"=>$toShip_details[0]->ordered_quantity );
        
         $endpoint="ordermgmt/orderstatus/orders/";
         $NewEggApi= new NewEggApi();
