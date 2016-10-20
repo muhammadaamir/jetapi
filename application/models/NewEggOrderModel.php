@@ -34,9 +34,20 @@ class NewEggOrderModel extends CI_Model {
         return false;
     }
 
-    function SaveOrderDetail($neweggorder,$iteminfo) {
+    function SaveOrderDetail($neweggorder,$iteminfo,$pkginfo,$pkgiteminfo) {
         $this->db->insert('neweggorders', $neweggorder);
-            $this->db->insert('newegg_item_info',$iteminfo);
+        foreach ($iteminfo as $item) {
+            $this->db->insert('newegg_item_info',$item);
+        }
+        if(!empty($pkginfo)){
+            foreach ($pkginfo as $pkg) {
+                $this->db->insert('newegg_pkg_info',$pkg);
+            }
+            foreach ($pkgiteminfo[0] as $pkgitem) {
+                 $this->db->insert('newegg_pkg_item_info',$pkgitem);
+            }
+        }
+            
         
     }
     
@@ -151,10 +162,14 @@ class NewEggOrderModel extends CI_Model {
     public function insert_order_details(){
         $orderIds = array("101062180","101062360","101062420","101062460","101355900","101355920" , "101355980",
             "101356020","101356060","101356080","101356140","101356200","101356260","101356280");
-       // $orderIds=array("101062460","101356020","101356260");
         $NewEggApi = new NewEggApi();
         foreach ($orderIds as $orderId) {
             $value=$NewEggApi->orderDetails($orderId);
+            $iteminfo=array();
+            $pkgiteminfo=array();
+            $pkginfo=  array();
+            $neweggorder=array();  
+            
             $neweggorder["order_number"]        = $value["ResponseBody"]["OrderInfoList"][0]["OrderNumber"];
             $neweggorder["seller_id"]           = $value["SellerID"];
             $neweggorder["invoice_number"]      = $value["ResponseBody"]["OrderInfoList"][0]["InvoiceNumber"];
@@ -182,51 +197,51 @@ class NewEggOrderModel extends CI_Model {
             $neweggorder["sales_channel"]       = $value["ResponseBody"]["OrderInfoList"][0]["SalesChannel"];
             $neweggorder["fulfillment_option"]  = $value["ResponseBody"]["OrderInfoList"][0]["FulfillmentOption"];
             
+            
             $item_info_array=$value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"];
             for($i=0;$i<count($item_info_array);$i++){
-                $iteminfo["order_number"]           = $value["ResponseBody"]["OrderInfoList"][0]["OrderNumber"];
-                $iteminfo["seller_part_number"]     = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["SellerPartNumber"];
-                $iteminfo["item_number"]            = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["NeweggItemNumber"];
-                $iteminfo["mfr_part_number"]        = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["MfrPartNumber"];
-                $iteminfo["upc_code"]               = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["UPCCode"];
-                $iteminfo["ordered_quantity"]       = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["OrderedQty"];
-                $iteminfo["shipped_quantity"]       = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["ShippedQty"];
-                $iteminfo["unit_price"]             = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["UnitPrice"];
-                $iteminfo["status"]                 = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["Status"];
-                $iteminfo["status_description"]     = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["StatusDescription"];
+                $iteminfo[$i]["order_number"]           = $value["ResponseBody"]["OrderInfoList"][0]["OrderNumber"];
+                $iteminfo[$i]["seller_part_number"]     = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["SellerPartNumber"];
+                $iteminfo[$i]["item_number"]            = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["NeweggItemNumber"];
+                $iteminfo[$i]["mfr_part_number"]        = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["MfrPartNumber"];
+                $iteminfo[$i]["upc_code"]               = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["UPCCode"];
+                $iteminfo[$i]["ordered_quantity"]       = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["OrderedQty"];
+                $iteminfo[$i]["shipped_quantity"]       = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["ShippedQty"];
+                $iteminfo[$i]["unit_price"]             = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["UnitPrice"];
+                $iteminfo[$i]["status"]                 = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["Status"];
+                $iteminfo[$i]["status_description"]     = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["StatusDescription"];
             }
             $pkg=$value["ResponseBody"]["OrderInfoList"][0]["PackageInfoList"];
-            for($i=0;$i<count($pkg);$i++){
-                
-                $pkginfo["order_number"]            = $orderId;
-                $pkginfo["pkg_type"]                = $pkg[$i]["PackageType"];
-                $pkginfo["ship_carrier"]            = $pkg[$i]["ShipCarrier"];
-                $pkginfo["ship_service"]            = $pkg[$i]["ShipService"];
-                $pkginfo["tracking_number"]         = $pkg[$i]["TrackingNumber"];
-                $pkginfo["ship_date"]               = $pkg[$i]["ShipDate"];
-                
-                $this->db->insert('newegg_pkg_info',$pkginfo);
-                $pkginfo=  array();
-                $pkgItem=$pkg[$i]["ItemInfoList"];
-                
-                for($j=0;$j<count($pkgItem);$j++){
-                    $pkgiteminfo["order_number"]        = $orderId;
-                    $pkgiteminfo["seller_part_number"]  = $pkgItem[$j]["SellerPartNumber"];
-                    $pkgiteminfo["mfr_part_number"]     = $pkgItem[$j]["MfrPartNumber"];
-                    $pkgiteminfo["shipped_quantity"]    = $pkgItem[$j]["ShippedQty"];
-                    
-                    $this->db->insert('newegg_pkg_item_info',$pkgiteminfo);
-                    $pkgiteminfo=array();
-                }         
-            }     
+            if(!empty($pkg)){
+                for($i=0;$i<count($pkg);$i++){
+
+                    $pkginfo[$i]["order_number"]            = $orderId;
+                    $pkginfo[$i]["pkg_type"]                = $pkg[$i]["PackageType"];
+                    $pkginfo[$i]["ship_carrier"]            = $pkg[$i]["ShipCarrier"];
+                    $pkginfo[$i]["ship_service"]            = $pkg[$i]["ShipService"];
+                    $pkginfo[$i]["tracking_number"]         = $pkg[$i]["TrackingNumber"];
+                    $pkginfo[$i]["ship_date"]               = $pkg[$i]["ShipDate"];
+
+                   // $this->db->insert('newegg_pkg_info',$pkginfo);
+                    $pkgItem=$pkg[$i]["ItemInfoList"];
+
+                    for($j=0;$j<count($pkgItem);$j++){
+                        $pkgiteminfo[$i][$j]["order_number"]        = $orderId;
+                        $pkgiteminfo[$i][$j]["seller_part_number"]  = $pkgItem[$j]["SellerPartNumber"];
+                        $pkgiteminfo[$i][$j]["mfr_part_number"]     = $pkgItem[$j]["MfrPartNumber"];
+                        $pkgiteminfo[$i][$j]["shipped_quantity"]    = $pkgItem[$j]["ShippedQty"];
+                    }
+                }
+            }
+                   // $this->db->insert('newegg_pkg_item_info',$pkgiteminfo);
             $checkOrderIdExist = $this->checkOrderIdExist($orderId);
             if(!count($checkOrderIdExist)){
-                $this->SaveOrderDetail($neweggorder, $iteminfo);
-                $iteminfo=array();
+                $this->SaveOrderDetail($neweggorder, $iteminfo,$pkginfo,$pkgiteminfo);
             }
-        }   
+      
+            }     
         return true;
-    }
+    }   
     
     public function confirm_order($orderId){
         $NewEggApi= new NewEggApi();

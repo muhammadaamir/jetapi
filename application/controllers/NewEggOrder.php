@@ -13,20 +13,11 @@ class NewEggOrder extends CI_Controller {
 
     public function index() {
 //        $response=$this->NewEggOrderModel->is_valid();
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-        $this->NewEggOrderModel->getRecord();
-        echo "New Egg Record Add...";
-=======
-        $response = $this->NewEggOrderModel->getRecord();
-        if($response)
-            echo "New Egg Record Add...";
->>>>>>> cacfbbe11d3ddf7a3eadecc6eac87213c23487c1
-=======
+        
+        
         $this->NewEggOrderModel->insert_order_details();
         echo "New Egg Record Add...";
->>>>>>> 5b39b5cf405e0032c3a4dde41ca7329ae95df67e
+
     }
     
     public function lists() {
