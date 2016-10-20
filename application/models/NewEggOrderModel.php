@@ -6,40 +6,25 @@ class NewEggOrderModel extends CI_Model {
         parent::__construct();
     }
 
-    public function update_status($orderId) {
-
-        $end_point = "ordermgmt/orderstatus/orders/";
-        $NewEggApi= new NewEggApi();
-        $value = $NewEggApi->getOrders($orderId, $end_point);
-        $data=array();
-        $data["order_status_code"]  = $value["OrderStatusCode"];
-        $data["order_status_name"]  = $value["OrderStatusName"];
-        $this->db->where('order_number', $orderId);
-        $this->db->update('new_egg_order', $data);
-    }
-
-    public function order_detail($orderId) {
+    public function get_order_detail($orderId) {
         $this->db->select('*');
-        $this->db->from('order_detail');
-        $this->db->join('order_item', 'order_detail.order_id = order_item.order_id');
-        $this->db->where('order_detail.order_id', $orderId);
+        $this->db->from('neweggorders');
+        $this->db->join('newegg_item_info', 'neweggorders.order_number = newegg_item_info.order_number');
+        $this->db->where('neweggorders.order_number', $orderId);
         $query = $this->db->get();
         if ($query->num_rows() > 0) {
-            foreach ($query->result() as $row) {
-                $data[] = $row;
-            }
-            return $data;
+            return $query->result();
         }
         return false;
     }
 
     public function record_count() {
-        return $this->db->count_all("new_egg_order");
+        return $this->db->count_all("neweggorders");
     }
 
     public function fetch_orders($limit, $start) {
         $this->db->limit($limit, $start);
-        $query = $this->db->get('new_egg_order');
+        $query = $this->db->get('neweggorders');
         if ($query->num_rows() > 0) {
             foreach ($query->result() as $row) {
                 $data[] = $row;
@@ -49,79 +34,222 @@ class NewEggOrderModel extends CI_Model {
         return false;
     }
 
-    function Show_all_orders() {
-
-        $query = $this->db->get('order');
-        return $query->result();
+    function SaveOrderDetail($neweggorder,$iteminfo) {
+        $this->db->insert('neweggorders', $neweggorder);
+            $this->db->insert('newegg_item_info',$iteminfo);
+        
     }
-
-    function SaveOrderId($url, $orderId) {
-        $this->db->insert('order', array('url' => $url, 'order_id' => $orderId));
-    }
-
-    function SaveOrderDetail($data) {
-        $this->db->insert('order_detail', $data);
-    }
-
-    function SaveOrder($data) {
-        $this->db->insert('new_egg_order', $data);
-    }
-
+    
     function checkOrderIdExist($orderId) {
         $this->db->select("*");
-        $this->db->from('new_egg_order');
-        $this->db->where('order_number', $orderId);
+        $this->db->from('neweggorders');
+        $this->db->join('newegg_item_info','neweggorders.order_number = newegg_item_info.order_number');
+        $this->db->join('newegg_pkg_info','neweggorders.order_number = newegg_pkg_info.order_number');
+        $this->db->join('newegg_pkg_item_info','neweggorders.order_number = newegg_pkg_item_info.order_number');
+        $this->db->where('neweggorders.order_number', $orderId);
         $query = $this->db->get();
         return $query->result();
     }
+    
+    function update_status($orderId,$status) {
 
-    function getRecord() {
         $end_point = "ordermgmt/orderstatus/orders/";
-        $orderIds = array("101062180","101062360","101062420","101062460");
-        $NewEggApi = new NewEggApi();
-        foreach ($orderIds as $orderId) {
-            $value = $NewEggApi->getOrders($orderId, $end_point);
-            
-            $data["order_number"]       = $value["OrderNumber"];
-            $data["seller_id"]          = $value["SellerID"];
-            $data["order_status_code"]  = $value["OrderStatusCode"];
-            $data["order_status_name"]  = $value["OrderStatusName"];
-            $data["order_downloaded"]   = $value["OrderDownloaded"];
-    //            $data["sales_channel"]      = $value["SalesChannel"];
-    //            $data["fulfillment_option"] = $value["FulfillmentOption"];
-            $checkOrderIdExist = $this->checkOrderIdExist($orderId);
-            if(!count($checkOrderIdExist)){
-                $this->SaveOrder($data);
-            }
-        }
-        return true;
-    }
-
-    function updateRecord($status, $orderId) {
-        error_reporting(0);
-        $endpoint="ordermgmt/orderstatus/orders/";
         $NewEggApi= new NewEggApi();
-        $response=$NewEggApi->orderUpdate($endpoint, $status, $orderId);
-        $new_status=$response[0]->Result->OrderStatus;
-        if($new_status){
-            $this->update_status($orderId);
-            return "Status updated: ".$new_status;
+        $response = $NewEggApi->orderDetails($orderId);
+        
+        $this->db->set('order_status',$response["ResponseBody"]["OrderInfoList"][0]["OrderStatus"]);
+        $this->db->set('order_status_description',$response["ResponseBody"]["OrderInfoList"][0]["OrderStatusDescription"]);
+        $this->db->where('order_number', $orderId);
+        $this->db->update('neweggorders');
+        
+        for($i=0;$i<count($response["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"]);$i++){
+            $this->db->set('status',$response["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["Status"]);
+            $this->db->set('status_description',$response["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["StatusDescription"]);
+            $this->db->set('shipped_quantity',$response["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["ShippedQty"]);
+            $this->db->where('order_number', $orderId);
+            $this->db->update('newegg_item_info');
+        }
+
+        
+        if($status=='cancel'){
+//           
+//            $pkg_info_fields=array('pkg_type','ship_carrier','ship_service','tracking_number','ship_date');
+//            foreach ($pkg_info_fields as $field) {
+//                $this->db->set($field,NULL);
+//            }
+//            $this->db->where('order_number', $orderId);
+//            $this->db->update('newegg_pkg_info');
+//            
+//            $pkg_item_info_fields=array('seller_part_number','mfr_part_number','shipped_quantity');
+//            foreach ($pkg_item_info_fields as $field2) {
+//                $this->db->set($field2,NULL);
+//            }
+//            $this->db->where('order_number', $orderId);
+//            $this->db->update('newegg_pkg_item_info');
         }
         else{
-            return $response[0]->Message;
+            $pkg=$response["ResponseBody"]["OrderInfoList"][0]["PackageInfoList"];
+   //         $pkgItem=$response["ResponseBody"]["OrderInfoList"][0]["PackageInfoList"][0]["ItemInfoList"];
+            for($i=0;$i<count($pkg);$i++){
+                
+                $pkginfo["order_number"]            = $orderId;
+                $pkginfo["pkg_type"]                = $pkg[$i]["PackageType"];
+                $pkginfo["ship_carrier"]            = $pkg[$i]["ShipCarrier"];
+                $pkginfo["ship_service"]            = $pkg[$i]["ShipService"];
+                $pkginfo["tracking_number"]         = $pkg[$i]["TrackingNumber"];
+                $pkginfo["ship_date"]               = $pkg[$i]["ShipDate"];
+                
+                $this->db->insert('newegg_pkg_info',$pkginfo);
+                $pkginfo=  array();
+                $pkgItem=$pkg[$i]["ItemInfoList"];
+                
+                for($j=0;$j<count($pkgItem);$j++){
+                    $pkgiteminfo["order_number"]        = $orderId;
+                    $pkgiteminfo["seller_part_number"]  = $pkgItem[$j]["SellerPartNumber"];
+                    $pkgiteminfo["mfr_part_number"]     = $pkgItem[$j]["MfrPartNumber"];
+                    $pkgiteminfo["shipped_quantity"]    = $pkgItem[$j]["ShippedQty"];
+                    
+                    $this->db->insert('newegg_pkg_item_info',$pkgiteminfo);
+                    $pkgiteminfo=array();
+                }         
+            }      
+        }
+    }
+
+    public function updateRecord($status, $orderId) {
+        error_reporting(0);
+        $toShip_details=$this->get_order_detail($orderId);
+        $request_fields=array(
+            "status"=>$status,
+            "seller_part_number"=>$toShip_details[0]->seller_part_number,
+            "ordered_qty"=>$toShip_details[0]->ordered_quantity 
+                );
+       
+        $endpoint="ordermgmt/orderstatus/orders/";
+        $NewEggApi= new NewEggApi();
+        $response=$NewEggApi->orderUpdate($endpoint, $orderId, $request_fields);
+        if($response){
+            if($status=='cancel')
+                $new_status=$response[0]["Result"]["OrderStatus"];
+            else
+                $new_status=$response["Result"]["OrderStatus"];
+            
+            
+            if($new_status){
+                $this->update_status($orderId,$status);
+                return "Status :". $new_status."..Process Result msg: ".$response["Result"]["Shipment"]["PackageList"][0]["ProcessResult"];
+            }
+            else{
+                return $response[0]["Message"];
+            }
+            return "newStatus not set";
+        }
+        else            
+            return "couldn't get the response from API";
+    }
+
+    public function insert_order_details(){
+        $orderIds = array("101062180","101062360","101062420","101062460","101355900","101355920" , "101355980",
+            "101356020","101356060","101356080","101356140","101356200","101356260","101356280");
+       // $orderIds=array("101062460","101356020","101356260");
+        $NewEggApi = new NewEggApi();
+        foreach ($orderIds as $orderId) {
+            $value=$NewEggApi->orderDetails($orderId);
+            $neweggorder["order_number"]        = $value["ResponseBody"]["OrderInfoList"][0]["OrderNumber"];
+            $neweggorder["seller_id"]           = $value["SellerID"];
+            $neweggorder["invoice_number"]      = $value["ResponseBody"]["OrderInfoList"][0]["InvoiceNumber"];
+            $neweggorder["order_downloaded"]    = $value["ResponseBody"]["OrderInfoList"][0]["OrderDownloaded"];
+            $neweggorder["order_date"]          = $value["ResponseBody"]["OrderInfoList"][0]["OrderDate"];
+            $neweggorder["order_status"]        = $value["ResponseBody"]["OrderInfoList"][0]["OrderStatus"];
+            $neweggorder["order_status_description"]  = $value["ResponseBody"]["OrderInfoList"][0]["OrderStatusDescription"];
+            $neweggorder["customer_name"]       = $value["ResponseBody"]["OrderInfoList"][0]["CustomerName"];
+            $neweggorder["customer_phone_number"]  =$value["ResponseBody"]["OrderInfoList"][0]["CustomerPhoneNumber"];
+            $neweggorder["customer_email"]      = $value["ResponseBody"]["OrderInfoList"][0]["CustomerEmailAddress"];
+            $neweggorder["address1"]            = $value["ResponseBody"]["OrderInfoList"][0]["ShipToAddress1"];
+            $neweggorder["address2"]            = $value["ResponseBody"]["OrderInfoList"][0]["ShipToAddress2"];
+            $neweggorder["city"]                = $value["ResponseBody"]["OrderInfoList"][0]["ShipToCityName"];
+            $neweggorder["state_code"]          = $value["ResponseBody"]["OrderInfoList"][0]["ShipToStateCode"];
+            $neweggorder["zip_code"]            = $value["ResponseBody"]["OrderInfoList"][0]["ShipToZipCode"];
+            $neweggorder["country_code"]        = $value["ResponseBody"]["OrderInfoList"][0]["ShipToCountryCode"];
+            $neweggorder["ship_service"]        = $value["ResponseBody"]["OrderInfoList"][0]["ShipService"];
+            $neweggorder["order_item_amount"]   = $value["ResponseBody"]["OrderInfoList"][0]["OrderItemAmount"];
+            $neweggorder["shipping_amount"]     = $value["ResponseBody"]["OrderInfoList"][0]["ShippingAmount"];
+            $neweggorder["discount_amount"]     = $value["ResponseBody"]["OrderInfoList"][0]["DiscountAmount"];
+            $neweggorder["order_quantity"]      = $value["ResponseBody"]["OrderInfoList"][0]["OrderQty"];
+            $neweggorder["refund_amount"]       = $value["ResponseBody"]["OrderInfoList"][0]["RefundAmount"];
+ //           $neweggorder["sales_tax"]           = $value["ResponseBody"]["OrderInfoList"][0]["SalesTax"];
+            $neweggorder["order_total_amount"]  = $value["ResponseBody"]["OrderInfoList"][0]["OrderTotalAmount"];
+            $neweggorder["sales_channel"]       = $value["ResponseBody"]["OrderInfoList"][0]["SalesChannel"];
+            $neweggorder["fulfillment_option"]  = $value["ResponseBody"]["OrderInfoList"][0]["FulfillmentOption"];
+            
+            $item_info_array=$value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"];
+            for($i=0;$i<count($item_info_array);$i++){
+                $iteminfo["order_number"]           = $value["ResponseBody"]["OrderInfoList"][0]["OrderNumber"];
+                $iteminfo["seller_part_number"]     = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["SellerPartNumber"];
+                $iteminfo["item_number"]            = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["NeweggItemNumber"];
+                $iteminfo["mfr_part_number"]        = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["MfrPartNumber"];
+                $iteminfo["upc_code"]               = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["UPCCode"];
+                $iteminfo["ordered_quantity"]       = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["OrderedQty"];
+                $iteminfo["shipped_quantity"]       = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["ShippedQty"];
+                $iteminfo["unit_price"]             = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["UnitPrice"];
+                $iteminfo["status"]                 = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["Status"];
+                $iteminfo["status_description"]     = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["StatusDescription"];
+            }
+            $pkg=$value["ResponseBody"]["OrderInfoList"][0]["PackageInfoList"];
+            for($i=0;$i<count($pkg);$i++){
+                
+                $pkginfo["order_number"]            = $orderId;
+                $pkginfo["pkg_type"]                = $pkg[$i]["PackageType"];
+                $pkginfo["ship_carrier"]            = $pkg[$i]["ShipCarrier"];
+                $pkginfo["ship_service"]            = $pkg[$i]["ShipService"];
+                $pkginfo["tracking_number"]         = $pkg[$i]["TrackingNumber"];
+                $pkginfo["ship_date"]               = $pkg[$i]["ShipDate"];
+                
+                $this->db->insert('newegg_pkg_info',$pkginfo);
+                $pkginfo=  array();
+                $pkgItem=$pkg[$i]["ItemInfoList"];
+                
+                for($j=0;$j<count($pkgItem);$j++){
+                    $pkgiteminfo["order_number"]        = $orderId;
+                    $pkgiteminfo["seller_part_number"]  = $pkgItem[$j]["SellerPartNumber"];
+                    $pkgiteminfo["mfr_part_number"]     = $pkgItem[$j]["MfrPartNumber"];
+                    $pkgiteminfo["shipped_quantity"]    = $pkgItem[$j]["ShippedQty"];
+                    
+                    $this->db->insert('newegg_pkg_item_info',$pkgiteminfo);
+                    $pkgiteminfo=array();
+                }         
+            }     
+            $checkOrderIdExist = $this->checkOrderIdExist($orderId);
+            if(!count($checkOrderIdExist)){
+                $this->SaveOrderDetail($neweggorder, $iteminfo);
+                $iteminfo=array();
+            }
+        }   
+        return true;
+    }
+    
+    public function confirm_order($orderId){
+        $NewEggApi= new NewEggApi();
+        $response=$NewEggApi->confirmOrder($orderId);
+        if(($response["NeweggAPIResponse"]["IsSuccess"])=="true"){
+            return "Order Confirmation Succeeded";
+        }
+        else{
+            return "Order Confirmation Failed! ".$response[0]["Message"];
         }
     }
     
-    
-    function order_details($orderId){
-        $NewEggApi= new NewEggApi();
-        $response=$NewEggApi->orderDetails($orderId);
+    public function remove_item($orderId){
+        $NewEggApi=new NewEggApi();
+        $details_response=$this->get_order_detail($orderId);
+        $SPartNumber= $details_response[0]->seller_part_number;
+        $response=$NewEggApi->removeItem($orderId,$SPartNumber);
         return $response;
     }
             
-    function isValid(){
-        $new_egg_obj= new NewEggApi();
-        return $new_egg_obj->isValid();
+    public function is_valid(){
+        $NewEggApi= new NewEggApi();
+        return $NewEggApi->isValid();
     }
 
 }

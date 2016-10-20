@@ -1,22 +1,7 @@
 <?php
 
 class NewEggOrder extends CI_Controller {
-
-    /**
-     * Index Page for this controller.
-     *
-     * Maps to the following URL
-     * 		http://example.com/index.php/welcome
-     * 	- or -
-     * 		http://example.com/index.php/welcome/index
-     * 	- or -
-     * Since this controller is set as the default controller in
-     * config/routes.php, it's displayed at http://example.com/
-     *
-     * So any other public methods not prefixed with an underscore will
-     * map to /index.php/welcome/<method_name>
-     * @see https://codeigniter.com/user_guide/general/urls.html
-     */
+    
     function __Construct() {
         parent::__Construct();
         $this->load->database(); // load database
@@ -27,8 +12,9 @@ class NewEggOrder extends CI_Controller {
     }
 
     public function index() {
-//        $response=$this->NewEggOrderModel->isValid();
+//        $response=$this->NewEggOrderModel->is_valid();
 
+<<<<<<< HEAD
 <<<<<<< HEAD
         $this->NewEggOrderModel->getRecord();
         echo "New Egg Record Add...";
@@ -37,6 +23,10 @@ class NewEggOrder extends CI_Controller {
         if($response)
             echo "New Egg Record Add...";
 >>>>>>> cacfbbe11d3ddf7a3eadecc6eac87213c23487c1
+=======
+        $this->NewEggOrderModel->insert_order_details();
+        echo "New Egg Record Add...";
+>>>>>>> 5b39b5cf405e0032c3a4dde41ca7329ae95df67e
     }
     
     public function lists() {
@@ -56,7 +46,7 @@ class NewEggOrder extends CI_Controller {
     
     public function oderDetail($orderId) {
 //        $orderId="101062460";
-        $data["results"] = $this->NewEggOrderModel->order_details($orderId);
+        $data["results"] = $this->NewEggOrderModel->get_order_detail($orderId);
 //        print_r($data);
         $this->load->view("new_egg_order_detail", $data);
     }
@@ -70,9 +60,27 @@ class NewEggOrder extends CI_Controller {
         if($response){
             echo $response;
         }
-        else echo "could not update!";
+        else echo "Could not update! ";
     }
     
+    
+    public function confirmOrder(){
+        $orderId= $this->input->post('id');
+        $response=$this->NewEggOrderModel->confirm_order($orderId);
+        if($response){
+            echo $response;
+        }
+        else echo "Error from Controller:NewEggOrder/confirmOrder <br> Couldn't perform Order Confirmation!";
+    }
+    
+    public function removeItem(){
+        $orderId=  $this->input->post('id');
+        $response=$this->NewEggOrderModel->remove_item($orderId);
+        if($response){
+            echo $response;
+        }
+        else echo "Could not remove item";
+    }
     
     
 }

@@ -8,6 +8,19 @@ class NewEggApi
     protected static  $seller_id    = "AC4E";
     protected static $api_prefix    = 'https://api.newegg.com/marketplace/';
     
+    
+       
+    function get_tracking_num(){
+        $length=6;
+        $string="";
+        while ($length>0){
+            $string.= dechex(mt_rand(0, 15));
+            $length--;
+        }
+        return $string;
+    }
+    
+    
     /*     
      * authorize credentials
      */
@@ -58,13 +71,13 @@ class NewEggApi
 //        return $this->create_json($data);
     }
         
-    public function orderUpdate($endpoint, $status,$orderId){
+    public function orderUpdate($endpoint,$orderId,$request_fields){
         $endpoint=$endpoint.$orderId."?sellerid=".self::$seller_id."&version=304";
-        $action= ($status=='cancel')? $action='1' :$action='2';
-        if($action=='1'){
+        $action= ($request_fields["status"]=='cancel')? $action="1" :$action="2";
+        if($action=="1"){
             $request_body=array(
                 'Action'=>$action,
-                'Value'=>'24'
+                'Value'=>'72'
             );
         }
         else{
@@ -74,17 +87,17 @@ class NewEggApi
                     'Shipment'=>array(
                         'Header'=>array(
                             "SellerID"=>self::$seller_id,
-                            "SONumber"=>$orderId
+                            "SONumber"=>(int)$orderId
                         ),
                         'PackageList'=>array(
                             'Package'=>array(
-                                'TrackingNumber'=>'',
-                                'ShipCarrier'=>'',
-                                'ShipService'=>'',
+                                'TrackingNumber'=>  $this->get_tracking_num(),
+                                'ShipCarrier'=>'TCS',
+                                'ShipService'=>'ground',
                                 'ItemList'=>array(
                                     'Item'=>array(
-                                        'SellerPartNumber'=>'',
-                                        'ShippedQty'=>''
+                                        'SellerPartNumber'=>$request_fields["seller_part_number"],
+                                        'ShippedQty'=>$request_fields["ordered_qty"]
                                     )
 
                                 )
@@ -107,9 +120,9 @@ class NewEggApi
             'Content-Type: application/json',
             'Accept: application/json' ) );
         $data=  curl_exec($ch);
-        return json_decode($data);
+//        return json_decode($data);
 
-//            return $this->create_json($data);
+            return $this->create_json($data);
     }
     
     public function orderDetails($orderId){
@@ -139,26 +152,63 @@ class NewEggApi
         return $this->create_json($data);
     }
 
-
-    public function orderShipped($orderId){
-            
-            $response = true; //call api function
-            
-            return $response;
-        }
-        
-        public function orderCancel($orderId){
-            
-            $response = true; //call api function
-            
-            return $response;
-        }
-        
-        public function orderStatus($status){
-            
-            
-            return $data;
-        }
+    public function confirmOrder($orderId){
+        $endpoint="ordermgmt/orderstatus/orders/confirmation?sellerid=".self::$seller_id;
+        $request_body=  array(
+            'OperationType'=>'OrderConfirmationRequest',
+            'RequestBody'=>array(
+                'DownloadedOrderList'=>array(
+                    'OrderNumber'=> (int)$orderId
+                )
+            )
+        );
+        $request_body=  json_encode($request_body);
+        $ch=  curl_init(self::$api_prefix.$endpoint);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $request_body);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array( 
+            'Authorization:'.self::$api_user_id,
+            'SecretKey:'.self::$api_secret,
+            'Content-Type: application/json',
+            'Accept: application/json' ) );
+        $data=  curl_exec($ch);
+        return $this->create_json($data);     
+    }
+    
+    
+    public function removeItem($orderId,$SPartNumber){
+        $endpoint="ordermgmt/killitem/orders/".$orderId."?sellerid=".self::$seller_id;
+        $request_body=array(
+            'OperationType'=>'KillItemRequest',
+            'RequestBody'=>array(
+                'KillItem'=>array(
+                    'Order'=>array(
+                        'ItemList'=>array(
+                            'Item'=>array(
+                                'SellerPartNumber'=>$SPartNumber
+                            )
+                        )
+                    )
+                )
+            )
+        );
+        $request_body=  json_encode($request_body);
+        $ch=  curl_init(self::$api_prefix.$endpoint);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $request_body);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array( 
+            'Authorization:'.self::$api_user_id,
+            'SecretKey:'.self::$api_secret,
+            'Content-Type: application/json',
+            'Accept: application/json' ) );
+        $data=  curl_exec($ch);
+        return $this->create_json($data);    
+    }
+    
 }
 
 

@@ -30,17 +30,37 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 success: function(data) {
 //                    
 //                    var data = JSON.stringify(data);
-                    alert(data);
+                    alert(data+ "in success");
                     console.log("     order# "+id+" Status: "+statusValue);
 //                    location.reload();
                     $('#loader-'+id).hide();
                 },
                 error: function(err){
                     $('#loader-'+id).hide();
-                    slert(err+" in error");
+                    alert(err+" in error "+id);
                 
                
                 }
+            });
+        });
+        
+        
+        $(document).on('click','.confirm-order',function(){
+            var id= $(this).val();
+            $.ajax({
+                url:'<?php echo base_url('NewEggOrder/confirmOrder')?>',
+                type:'POST',
+                data: {
+                    id:id
+                },
+                success:function(data){
+                    $('.confirm-order[value='+id+']').hide();
+                    alert(data+"  in success ");
+                },
+                error: function(err){
+                    alert(err+" in error");
+                }
+                        
             });
         });
         </script>
@@ -69,25 +89,27 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             foreach($results as $data) {?>
                 <tr>
                     <td><?php echo $data->order_number?></td>
-                    <td><?php echo $data->order_status_name?></td>
+                    <td><?php echo $data->order_status_description?></td>
                     <td><?php echo $data->seller_id ?></td>
                     <td>
                         <div id="div-<?php echo $data->order_number ?>">
                             <?php
-                            $status=$data->order_status_name;
+                            $status=$data->order_status_description;
                             if($status == 'Shipped'){ ?>
-                                <button type="button" class="btn btn-success order" value='shipped' order-id="<?php echo $data->order_number ?>" >Shipping</button>
+<!--                              <button type="button" class="btn btn-success order" value='shipped' order-id="<?php //echo $data->order_number ?>" >Shipping</button>-->
                             <?php
                             }elseif($status == 'Invoiced'){
 
-                            }elseif($status=='Unshipped'||$status=='Partiallyshipped'){?>
-                            <button type="button" class="btn btn-danger order" value='cancel' order-id="<?php echo $data->order_number ?>" >Cancel Order</button>
-                            <button type="button" class="btn btn-primary order" value='ship' order-id="<?php echo $data->order_number ?>" >Ship Order</button>
+                            }elseif($status=='Unshipped'||$status=='Partially Shipped'){?>
+                                <button class="btn btn-warning confirm-order " value="<?php echo $data->order_number?>">Confirm Order</button>
+                                <button type="button" class="btn btn-danger order" value='cancel' order-id="<?php echo $data->order_number ?>" >Cancel Order</button>
+                                <button type="button" class="btn btn-primary order" value='ship' order-id="<?php echo $data->order_number ?>" >Ship Order</button>
                             <?php
 
-                            }elseif($status=='Void'){ ?>
-                                <button type="button" class="btn btn-primary order" value='ship' order-id="<?php echo $data->order_number ?>" >Ship Order</button>
-                            <?php }
+                            }elseif($status=='Voided'){ ?>
+                           <button type="button" class="btn btn-primary order" value='ship' order-id="<?php  echo $data->order_number ?>" >Ship Order</button>
+                            <button type="button" class="btn btn-danger order" value='cancel' order-id="<?php echo $data->order_number ?>" >Cancel Order</button>
+                               <?php }
                             else{?>
                             <?php
                             }
@@ -101,6 +123,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         </table>
         <p><?php echo $links; ?></p>
     </div>
+    
     <p class="footer"></p>
  </div>
 </body>
