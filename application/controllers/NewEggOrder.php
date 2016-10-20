@@ -29,8 +29,14 @@ class NewEggOrder extends CI_Controller {
     public function index() {
 //        $response=$this->NewEggOrderModel->isValid();
 
+<<<<<<< HEAD
         $this->NewEggOrderModel->getRecord();
         echo "New Egg Record Add...";
+=======
+        $response = $this->NewEggOrderModel->getRecord();
+        if($response)
+            echo "New Egg Record Add...";
+>>>>>>> cacfbbe11d3ddf7a3eadecc6eac87213c23487c1
     }
     
     public function lists() {
@@ -49,15 +55,24 @@ class NewEggOrder extends CI_Controller {
     }
     
     public function oderDetail($orderId) {
-        
-        $data["results"] = $this->OrderModel->order_detail($orderId);
-        $this->load->view("order_detail_view", $data);
+//        $orderId="101062460";
+        $data["results"] = $this->NewEggOrderModel->order_details($orderId);
+//        print_r($data);
+        $this->load->view("new_egg_order_detail", $data);
     }
     
     public function updateOrder(){
-        $status['status']   = $this->input->post('status');
-        $orderId            = $this->input->post('id');
-        $response = $this->OrderModel->updateRecord($status, $orderId);        
-        echo json_encode($response);
+        $status   = $this->input->post('status');
+        $orderId  = $this->input->post('id');
+//        $status='cancel';
+//        $orderId="101062460";
+        $response = $this->NewEggOrderModel->updateRecord($status, $orderId);   
+        if($response){
+            echo $response;
+        }
+        else echo "could not update!";
     }
+    
+    
+    
 }

@@ -6,9 +6,16 @@ class NewEggOrderModel extends CI_Model {
         parent::__construct();
     }
 
-    public function update_status($orderId, $status) {
-        $this->db->where('order_id', $orderId);
-        $this->db->update('order_detail', $status);
+    public function update_status($orderId) {
+
+        $end_point = "ordermgmt/orderstatus/orders/";
+        $NewEggApi= new NewEggApi();
+        $value = $NewEggApi->getOrders($orderId, $end_point);
+        $data=array();
+        $data["order_status_code"]  = $value["OrderStatusCode"];
+        $data["order_status_name"]  = $value["OrderStatusName"];
+        $this->db->where('order_number', $orderId);
+        $this->db->update('new_egg_order', $data);
     }
 
     public function order_detail($orderId) {
@@ -74,15 +81,16 @@ class NewEggOrderModel extends CI_Model {
         $NewEggApi = new NewEggApi();
         foreach ($orderIds as $orderId) {
             $value = $NewEggApi->getOrders($orderId, $end_point);
+            
+            $data["order_number"]       = $value["OrderNumber"];
+            $data["seller_id"]          = $value["SellerID"];
+            $data["order_status_code"]  = $value["OrderStatusCode"];
+            $data["order_status_name"]  = $value["OrderStatusName"];
+            $data["order_downloaded"]   = $value["OrderDownloaded"];
+    //            $data["sales_channel"]      = $value["SalesChannel"];
+    //            $data["fulfillment_option"] = $value["FulfillmentOption"];
             $checkOrderIdExist = $this->checkOrderIdExist($orderId);
             if(!count($checkOrderIdExist)){
-                $data["order_number"]       = $value["OrderNumber"];
-                $data["seller_id"]          = $value["SellerID"];
-                $data["order_status_code"]  = $value["OrderStatusCode"];
-                $data["order_status_name"]  = $value["OrderStatusName"];
-                $data["order_downloaded"]   = $value["OrderDownloaded"];
-        //            $data["sales_channel"]      = $value["SalesChannel"];
-        //            $data["fulfillment_option"] = $value["FulfillmentOption"];
                 $this->SaveOrder($data);
             }
         }
@@ -90,12 +98,27 @@ class NewEggOrderModel extends CI_Model {
     }
 
     function updateRecord($status, $orderId) {
-        
-        return $orderId;
+        error_reporting(0);
+        $endpoint="ordermgmt/orderstatus/orders/";
+        $NewEggApi= new NewEggApi();
+        $response=$NewEggApi->orderUpdate($endpoint, $status, $orderId);
+        $new_status=$response[0]->Result->OrderStatus;
+        if($new_status){
+            $this->update_status($orderId);
+            return "Status updated: ".$new_status;
+        }
+        else{
+            return $response[0]->Message;
+        }
     }
     
     
-    
+    function order_details($orderId){
+        $NewEggApi= new NewEggApi();
+        $response=$NewEggApi->orderDetails($orderId);
+        return $response;
+    }
+            
     function isValid(){
         $new_egg_obj= new NewEggApi();
         return $new_egg_obj->isValid();

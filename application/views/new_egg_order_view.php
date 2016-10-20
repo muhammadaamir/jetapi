@@ -16,26 +16,30 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             var statusValue = $(this).val();
 //            alert(id );
             $.ajax({
-                url: '<?php echo site_url('order/updateOrder'); ?>',
+                url: '<?php echo base_url('NewEggOrder/updateOrder'); ?>',
                 type: 'POST',
+                crossDomain:true,
+                xhrFields:{withCredentials:true},
                 data: {
                     status: statusValue,
                     id:id
                 },
-                dataType: 'json',
                 beforeSend: function (xhr) {
                         $('#loader-'+id).show();
                     },
                 success: function(data) {
 //                    
-                    var data = JSON.stringify(data);
-//                    alert(data);
-                    location.reload();
+//                    var data = JSON.stringify(data);
+                    alert(data);
+                    console.log("     order# "+id+" Status: "+statusValue);
+//                    location.reload();
                     $('#loader-'+id).hide();
                 },
-                error: function(){
-            $('#loader-'+id).hide();
-                  alert("error");
+                error: function(err){
+                    $('#loader-'+id).hide();
+                    slert(err+" in error");
+                
+               
                 }
             });
         });
@@ -46,7 +50,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  <div id="container" style="padding: 50px">
     <h1>New Egg Orders</h1>
     <div class="table">
+<<<<<<< HEAD
         <table class="table table-striped table-hover ">
+=======
+        <table class="table table-striped table-hover">
+>>>>>>> cacfbbe11d3ddf7a3eadecc6eac87213c23487c1
           <thead>
               <tr>
                   <th>Order Id</th>
@@ -65,20 +73,26 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <td><?php echo $data->seller_id ?></td>
                     <td>
                         <div id="div-<?php echo $data->order_number ?>">
-                            <?php if($data->order_status_code == 'accepted'){ ?>
+                            <?php
+                            $status=$data->order_status_name;
+                            if($status == 'Shipped'){ ?>
                                 <button type="button" class="btn btn-success order" value='shipped' order-id="<?php echo $data->order_number ?>" >Shipping</button>
                             <?php
-                            }elseif($data->order_status_code == 'rejected'){
+                            }elseif($status == 'Invoiced'){
 
-                            }elseif($data->order_status_code == 'shipped'){?>
-                            
+                            }elseif($status=='Unshipped'||$status=='Partiallyshipped'){?>
+                            <button type="button" class="btn btn-danger order" value='cancel' order-id="<?php echo $data->order_number ?>" >Cancel Order</button>
+                            <button type="button" class="btn btn-primary order" value='ship' order-id="<?php echo $data->order_number ?>" >Ship Order</button>
                             <?php
 
-                            }else{ ?>
-                                <button type="button" class="btn btn-primary order" value='accepted' order-id="<?php echo $data->order_number ?>" >Accept</button>
-                                <button type="button" class="btn btn-danger order" value='rejected' order-id="<?php echo $data->order_number ?>" >Reject</button>
-                            <?php }?>
-                            <a href='<?php echo "/order/oderDetail/".$data->order_number ?>' class="btn btn-info" role="button">View Detail</a>
+                            }elseif($status=='Void'){ ?>
+                                <button type="button" class="btn btn-primary order" value='ship' order-id="<?php echo $data->order_number ?>" >Ship Order</button>
+                            <?php }
+                            else{?>
+                            <?php
+                            }
+                            ?>
+                            <a href='<?php echo "oderDetail/".$data->order_number ?>' class="btn btn-info" role="button">View Detail</a>
                             <span style="display:none" id="loader-<?php echo $data->order_number ?>"><img src="<?php echo base_url("assets/img/loader.gif"); ?>" /></span>
                         </div>
                     </td>
