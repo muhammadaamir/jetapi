@@ -37,7 +37,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 },
                 error: function(err){
                     $('#loader-'+id).hide();
-                    alert(err+" in error");
+                    alert(err+" in error "+id);
                 
                
                 }
@@ -55,7 +55,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 },
                 success:function(data){
                     $('.confirm-order[value='+id+']').hide();
-                    alert(data+" in success ");
+                    alert(data+"  in success ");
                 },
                 error: function(err){
                     alert(err+" in error");
@@ -103,8 +103,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             <?php
 
                             }elseif($status=='Voided'){ ?>
-<!--                                <button type="button" class="btn btn-primary order" value='ship' order-id="<?php // echo $data->order_number ?>" >Ship Order</button>-->
-                            <?php }
+                           <button type="button" class="btn btn-primary order" value='ship' order-id="<?php  echo $data->order_number ?>" >Ship Order</button>
+                            <button type="button" class="btn btn-danger order" value='cancel' order-id="<?php echo $data->order_number ?>" >Cancel Order</button>
+                               <?php }
                             else{?>
                             <?php
                             }

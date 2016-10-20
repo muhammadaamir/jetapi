@@ -73,11 +73,11 @@ class NewEggApi
         
     public function orderUpdate($endpoint,$orderId,$request_fields){
         $endpoint=$endpoint.$orderId."?sellerid=".self::$seller_id."&version=304";
-        $action= ($request_fields["status"]=='cancel')? $action=1 :$action=2;
-        if($action=='1'){
+        $action= ($request_fields["status"]=='cancel')? $action="1" :$action="2";
+        if($action=="1"){
             $request_body=array(
                 'Action'=>$action,
-                'Value'=>72
+                'Value'=>'72'
             );
         }
         else{
@@ -97,7 +97,7 @@ class NewEggApi
                                 'ItemList'=>array(
                                     'Item'=>array(
                                         'SellerPartNumber'=>$request_fields["seller_part_number"],
-                                        'ShippedQty'=>$request_fields["shipped_qty"]
+                                        'ShippedQty'=>$request_fields["ordered_qty"]
                                     )
 
                                 )
@@ -120,9 +120,9 @@ class NewEggApi
             'Content-Type: application/json',
             'Accept: application/json' ) );
         $data=  curl_exec($ch);
-        return json_decode($data);
+//        return json_decode($data);
 
-//            return $this->create_json($data);
+            return $this->create_json($data);
     }
     
     public function orderDetails($orderId){

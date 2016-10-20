@@ -49,7 +49,7 @@ class NewEggOrder extends CI_Controller {
         if($response){
             echo $response;
         }
-        else echo "Could not update!";
+        else echo "Could not update! ";
     }
     
     
