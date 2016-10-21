@@ -74,8 +74,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
           <thead>
               <tr>
                   <th>Order Id</th>
-                  <th>Status</th>
                   <th>Seller Id</th>
+                  <th>Status</th>
                   <th>Action</th>
               </tr>
           </thead>
@@ -85,8 +85,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             foreach($results as $data) {?>
                 <tr>
                     <td><?php echo $data->order_number?></td>
-                    <td><?php echo $data->order_status_description?></td>
                     <td><?php echo $data->seller_id ?></td>
+                    <td><?php echo $data->order_status_description?></td>
                     <td>
                         <div id="div-<?php echo $data->order_number ?>">
                             <?php
@@ -103,9 +103,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             <?php
 
                             }elseif($status=='Voided'){ ?>
-                           <button type="button" class="btn btn-primary order" value='ship' order-id="<?php  echo $data->order_number ?>" >Ship Order</button>
-                            <button type="button" class="btn btn-danger order" value='cancel' order-id="<?php echo $data->order_number ?>" >Cancel Order</button>
-                               <?php }
+                            
+                            <?php }
                             else{?>
                             <?php
                             }

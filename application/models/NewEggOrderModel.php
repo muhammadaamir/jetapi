@@ -163,7 +163,7 @@ class NewEggOrderModel extends CI_Model {
 
     public function insert_order_details(){
         $orderIds = array("101062180","101062360","101062420","101062460","101355900","101355920" , "101355980",
-            "101356020","101356060","101356080");
+            "101356020","101356060","101356080","101356140","101356200","101356260","101356280");
         $NewEggApi = new NewEggApi();
         foreach ($orderIds as $orderId) {
             $checkOrderIdExist = $this->checkOrderIdExist($orderId);
