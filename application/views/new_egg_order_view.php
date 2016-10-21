@@ -27,10 +27,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 beforeSend: function (xhr) {
                         $('#loader-'+id).show();
                     },
-                success: function(data) {
-//                    
+                success: function(data) {                    
 //                    var data = JSON.stringify(data);
-//                    alert(data+ "in success");
+                   // alert(data+ "in success");
                     console.log("     order# "+id+" Status: "+statusValue);
                     location.reload();
                     $('#loader-'+id).hide();
@@ -106,7 +105,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             <?php
 
                             }elseif($status=='Voided'){ ?>
-                                <button type="button" class="btn btn-primary order" value='ship' order-id="<?php echo $data->order_number ?>" >Ship Order</button>
                             <?php }
                             else{?>
                             <?php

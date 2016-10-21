@@ -5,17 +5,11 @@ class NewEggOrderModel extends CI_Model {
     public function __construct() {
         parent::__construct();
     }
-    
-    public function get_pkg_details($orderId){
-        $this->db->select('*');
-    }
 
     public function get_order_detail($orderId) {
         $this->db->select('*');
         $this->db->from('neweggorders');
         $this->db->join('newegg_item_info', 'neweggorders.order_number = newegg_item_info.order_number');
-//        $this->db->join('newegg_pkg_info','neweggorders.order_number = newegg_pkg_info.order_number');
-//        $this->db->join('newegg_pkg_item_info','neweggorders.order_number = newegg_pkg_item_info.order_number');
         $this->db->where('neweggorders.order_number', $orderId);
         $query = $this->db->get();
         if ($query->num_rows() > 0) {
@@ -55,10 +49,6 @@ class NewEggOrderModel extends CI_Model {
                    $this->db->insert('newegg_pkg_item_info',$pkgitem);
                }
             }
-            
-//            foreach ($pkgiteminfo[0] as $pkgitem) {
-//                 $this->db->insert('newegg_pkg_item_info',$pkgitem);
-//            }
         } 
     }
     
@@ -133,7 +123,7 @@ class NewEggOrderModel extends CI_Model {
     }
 
     public function updateRecord($status, $orderId) {
-     //   error_reporting(0);
+        error_reporting(0);
         $NewEggApi= new NewEggApi();
         $toShip_details=$this->get_order_detail($orderId);
         
@@ -147,14 +137,10 @@ class NewEggOrderModel extends CI_Model {
             $endpoint="ordermgmt/orderstatus/orders/";
             $response=$NewEggApi->orderUpdate($endpoint, $orderId, $request_fields);
             if($response){
-                if($status=='cancel')
-                    $new_status=$response[0]["Result"]["OrderStatus"];
-                else
-                    $new_status=$response["Result"]["OrderStatus"];
-            
+                $new_status=$response["IsSuccess"];
                 if($new_status){
                     $this->update_status($orderId,$status);
-                    return "Status :". $new_status."..Process Result msg: ".$response["Result"]["Shipment"]["PackageList"][0]["ProcessResult"];
+                    return TRUE;
                 }
                 else{
                     return $response[0]["Message"];
