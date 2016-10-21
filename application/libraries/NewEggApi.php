@@ -73,7 +73,7 @@ class NewEggApi
         
     public function orderUpdate($endpoint,$orderId,$request_fields){
         $endpoint=$endpoint.$orderId."?sellerid=".self::$seller_id."&version=304";
-        $action= ($request_fields["status"]=='cancel')? $action="1" :$action="2";
+        $action= ($request_fields[0]["status"]=='cancel')? $action="1" :$action="2";
         if($action=="1"){
             $request_body=array(
                 'Action'=>$action,
@@ -81,6 +81,21 @@ class NewEggApi
             );
         }
         else{
+            $num_of_pkg=count($request_fields);
+            for($i=0;$i<$num_of_pkg;$i++){
+                $pkg_body[$i]=array(
+                                'TrackingNumber'=>  $this->get_tracking_num(),
+                                'ShipCarrier'=>'TCS',
+                                'ShipService'=>'ground',
+                                'ItemList'=>array(
+                                    'Item'=>array(
+                                        'SellerPartNumber'=>$request_fields[$i]["seller_part_number"],
+                                        'ShippedQty'=>$request_fields[$i]["ordered_qty"]
+                                    )
+                                )
+                        );
+            }
+            
             $request_body=array(
                 'Action'=>$action,
                 'Value' => array(
@@ -90,18 +105,7 @@ class NewEggApi
                             "SONumber"=>(int)$orderId
                         ),
                         'PackageList'=>array(
-                            'Package'=>array(
-                                'TrackingNumber'=>  $this->get_tracking_num(),
-                                'ShipCarrier'=>'TCS',
-                                'ShipService'=>'ground',
-                                'ItemList'=>array(
-                                    'Item'=>array(
-                                        'SellerPartNumber'=>$request_fields["seller_part_number"],
-                                        'ShippedQty'=>$request_fields["ordered_qty"]
-                                    )
-
-                                )
-                            )
+                            'Package'=>$pkg_body
                         )
                     )
                 ),
@@ -109,6 +113,8 @@ class NewEggApi
             );
         }
         $request_body=  json_encode($request_body);
+        print_r($request_body);
+        die();
         $ch=  curl_init(self::$api_prefix.$endpoint);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
