@@ -30,9 +30,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 success: function(data) {
 //                    
 //                    var data = JSON.stringify(data);
-                    alert(data+ "in success");
+//                    alert(data+ "in success");
                     console.log("     order# "+id+" Status: "+statusValue);
-//                    location.reload();
+                    location.reload();
                     $('#loader-'+id).hide();
                 },
                 error: function(err){
@@ -96,7 +96,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <!--                              <button type="button" class="btn btn-success order" value='shipped' order-id="<?php //echo $data->order_number ?>" >Shipping</button>-->
                             <?php
                             }elseif($status == 'Invoiced'){?>
-                                <button class="btn btn-success delivery " value="delivery" order-id="<?php echo $data->order_number?>">Delivery</button>
+                                <button class="btn btn-success delivery order" value="delivery" order-id="<?php echo $data->order_number?>">Delivery</button>
                             <?php
                                 
                             }elseif($status=='Unshipped'||$status=='Partially Shipped'){?>
