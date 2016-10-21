@@ -134,37 +134,44 @@ class NewEggOrderModel extends CI_Model {
 
     public function updateRecord($status, $orderId) {
      //   error_reporting(0);
+        $NewEggApi= new NewEggApi();
         $toShip_details=$this->get_order_detail($orderId);
         
-        for($i=0;$i<count($toShip_details);$i++){
-            $request_fields[$i]=array(
-                "status"=>$status,
-
-                "seller_part_number"=>$toShip_details[$i]->seller_part_number,
-                "ordered_qty"=>$toShip_details[$i]->ordered_quantity );
+        if($status=='cancel'||$status=='ship'){
+            for($i=0;$i<count($toShip_details);$i++){
+                $request_fields[$i]=array(
+                    "status"=>$status,
+                    "seller_part_number"=>$toShip_details[$i]->seller_part_number,
+                    "ordered_qty"=>$toShip_details[$i]->ordered_quantity );
+            }
+            $endpoint="ordermgmt/orderstatus/orders/";
+            $response=$NewEggApi->orderUpdate($endpoint, $orderId, $request_fields);
+            if($response){
+                if($status=='cancel')
+                    $new_status=$response[0]["Result"]["OrderStatus"];
+                else
+                    $new_status=$response["Result"]["OrderStatus"];
+            
+                if($new_status){
+                    $this->update_status($orderId,$status);
+                    return "Status :". $new_status."..Process Result msg: ".$response["Result"]["Shipment"]["PackageList"][0]["ProcessResult"];
+                }
+                else{
+                    return $response[0]["Message"];
+                }
+            }
         }
-       
-        $endpoint="ordermgmt/orderstatus/orders/";
-        $NewEggApi= new NewEggApi();
-        $response=$NewEggApi->orderUpdate($endpoint, $orderId, $request_fields);
-        if($response){
-            if($status=='cancel')
-                $new_status=$response[0]["Result"]["OrderStatus"];
-            else
-                $new_status=$response["Result"]["OrderStatus"];
-            
-            
-            if($new_status){
-                $this->update_status($orderId,$status);
-                return "Status :". $new_status."..Process Result msg: ".$response["Result"]["Shipment"]["PackageList"][0]["ProcessResult"];
+        else{
+            $request_fields=array();
+            $endpoint="shippingservice/shippinglabel/shippingrequest?sellerid=";
+            $response= $NewEggApi->order_delivery($endpoint,$orderId,$request_fields);
+            if($response){
+                return $response;
             }
             else{
                 return $response[0]["Message"];
             }
-            return "new status not set";
-        }
-        else            
-            return "couldn't get the response from API";
+        }         
     }
 
     public function insert_order_details(){

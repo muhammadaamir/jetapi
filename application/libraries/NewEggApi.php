@@ -67,11 +67,13 @@ class NewEggApi
             'Accept: application/json' ) );
         $data =  curl_exec($ch);
         return $this->create_json($data);
-
-//        return $this->create_json($data);
     }
-        
-    public function orderUpdate($endpoint,$orderId,$request_fields){
+    
+    public function order_delivery($endpoint,$orderId,$request_fields){
+        $endpoint=$endpoint.self::$seller_id;
+    }
+
+        public function orderUpdate($endpoint,$orderId,$request_fields){
         $endpoint=$endpoint.$orderId."?sellerid=".self::$seller_id."&version=304";
         $action= ($request_fields[0]["status"]=='cancel')? $action="1" :$action="2";
         if($action=="1"){
