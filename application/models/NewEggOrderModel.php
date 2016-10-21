@@ -5,11 +5,17 @@ class NewEggOrderModel extends CI_Model {
     public function __construct() {
         parent::__construct();
     }
+    
+    public function get_pkg_details($orderId){
+        $this->db->select('*');
+    }
 
     public function get_order_detail($orderId) {
         $this->db->select('*');
         $this->db->from('neweggorders');
         $this->db->join('newegg_item_info', 'neweggorders.order_number = newegg_item_info.order_number');
+//        $this->db->join('newegg_pkg_info','neweggorders.order_number = newegg_pkg_info.order_number');
+//        $this->db->join('newegg_pkg_item_info','neweggorders.order_number = newegg_pkg_item_info.order_number');
         $this->db->where('neweggorders.order_number', $orderId);
         $query = $this->db->get();
         if ($query->num_rows() > 0) {

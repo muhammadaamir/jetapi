@@ -103,7 +103,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             <?php
 
                             }elseif($status=='Voided'){ ?>
-                            
+                                <button type="button" class="btn btn-primary order" value='ship' order-id="<?php echo $data->order_number ?>" >Ship Order</button>
                             <?php }
                             else{?>
                             <?php
