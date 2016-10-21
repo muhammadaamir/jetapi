@@ -56,6 +56,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 success:function(data){
                     $('.confirm-order[value='+id+']').hide();
                     alert(data+"  in success ");
+                    location.reload();
                 },
                 error: function(err){
                     alert(err+" in error");
@@ -94,8 +95,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             if($status == 'Shipped'){ ?>
 <!--                              <button type="button" class="btn btn-success order" value='shipped' order-id="<?php //echo $data->order_number ?>" >Shipping</button>-->
                             <?php
-                            }elseif($status == 'Invoiced'){
-
+                            }elseif($status == 'Invoiced'){?>
+                                <button class="btn btn-success delivery " value="delivery" order-id="<?php echo $data->order_number?>">Delivery</button>
+                            <?php
+                                
                             }elseif($status=='Unshipped'||$status=='Partially Shipped'){?>
                                 <button class="btn btn-warning confirm-order " value="<?php echo $data->order_number?>">Confirm Order</button>
                                 <button type="button" class="btn btn-danger order" value='cancel' order-id="<?php echo $data->order_number ?>" >Cancel Order</button>
