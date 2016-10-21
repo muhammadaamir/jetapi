@@ -113,8 +113,8 @@ class NewEggApi
             );
         }
         $request_body=  json_encode($request_body);
-        print_r($request_body);
-        die();
+//        print_r($request_body);
+//        die();
         $ch=  curl_init(self::$api_prefix.$endpoint);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");

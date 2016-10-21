@@ -155,7 +155,7 @@ class NewEggOrderModel extends CI_Model {
             else{
                 return $response[0]["Message"];
             }
-            return $response;
+            return "new status not set";
         }
         else            
             return "couldn't get the response from API";
