@@ -272,6 +272,40 @@ class NewEggApi
         return $this->create_json($data);    
     }
     
+    
+    public function fromNeweggWarehouse($sPartNumber){
+        $endpoint="sbnmgmt/inboundshipment/plansuggestion?sellerid=".self::$seller_id;
+        for($i=0;$i<count($sPartNumber);$i++){
+            $item_body[$i]=array(
+                'SellerPartNumber'  =>  $sPartNumber[$i],
+                'PlannedQuantity'   =>  20
+            );
+        }
+        $request_body=array(
+            'OperationType' =>  'GetPlanSuggestionRequest',
+            'RequestBody'   =>  array(
+                'PlanSuggestion'    =>  array(
+                    'ItemList'  =>  array(
+                        'Item'  =>  $item_body
+                    )
+                )
+            )
+        );
+        $request_body= json_encode($request_body);
+        $ch=  curl_init(self::$api_prefix.$endpoint);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $request_body);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array( 
+            'Authorization:'.self::$api_user_id,
+            'SecretKey:'.self::$api_secret,
+            'Content-Type: application/json',
+            'Accept: application/json' ) );
+        $data=  curl_exec($ch);
+        return $this->create_json($data);
+    }
+    
 }
 
 
