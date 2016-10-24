@@ -128,8 +128,8 @@ class NewEggApi
         
     }
 
-        public function orderUpdate($endpoint,$orderId,$request_fields){
-        $endpoint=$endpoint.$orderId."?sellerid=".self::$seller_id."&version=304";
+        public function orderUpdate($orderId,$request_fields){
+        $endpoint="ordermgmt/orderstatus/orders/".$orderId."?sellerid=".self::$seller_id."&version=304";
         $action= ($request_fields[0]["status"]=='cancel')? $action="1" :$action="2";
         if($action=="1"){
             $request_body=array(

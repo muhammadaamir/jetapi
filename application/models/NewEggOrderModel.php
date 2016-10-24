@@ -134,11 +134,10 @@ class NewEggOrderModel extends CI_Model {
                     "seller_part_number"=>$toShip_details[$i]->seller_part_number,
                     "ordered_qty"=>$toShip_details[$i]->ordered_quantity );
             }
-            $endpoint="ordermgmt/orderstatus/orders/";
-            $response=$NewEggApi->orderUpdate($endpoint, $orderId, $request_fields);
+            
+            $response=$NewEggApi->orderUpdate($orderId, $request_fields);
             if($response){
-                $new_status=$response["IsSuccess"];
-                if($new_status){
+                if(($response["IsSuccess"])=='true'){
                     $this->update_status($orderId,$status);
                     return TRUE;
                 }
