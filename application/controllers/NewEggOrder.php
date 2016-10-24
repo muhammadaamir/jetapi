@@ -37,7 +37,11 @@ class NewEggOrder extends CI_Controller {
     public function oderDetail($orderId) {
 //        $orderId="101062460";
         $data["results"] = $this->NewEggOrderModel->get_order_detail($orderId);
+        $data['result2'] = $this->NewEggOrderModel->getPackageInfo($orderId);
+//        echo ' <pre>';
 //        print_r($data);
+//        die();
+        
         $this->load->view("new_egg_order_detail", $data);
     }
     

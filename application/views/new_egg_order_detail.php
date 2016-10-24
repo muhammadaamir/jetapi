@@ -1,5 +1,5 @@
 <?php
-
+error_reporting(0);
 /* 
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -112,14 +112,58 @@
                             <?php echo $results[0]->shipping_amount;?>
                         </td>
                     </tr>
-                    <tr class="row">
-                        <td class="col-sm-6">
-                            Seller Part Number:
-                        </td>
-                        <td class="col-sm-6">
-                            <?php echo $results[0]->seller_part_number;?>
-                        </td>
-                    </tr>
+
+                    <?php $count = 1;
+                        foreach($results as $data) {?>
+                            <tr class="row">
+                            <td colspan='2'><b>Item-<?php echo $count ?></b></td>
+                            </tr>
+                            <tr class="row">
+                                <td> Seller Part Number: </td>
+                                <td><?php echo $data->seller_part_number ;?></td>
+                            </tr>
+                            <tr class="row">
+                                <td>Item number: </td>
+                                <td><?php echo $data->item_number; ?></td>
+                            </tr >
+                            <tr class="row">
+                                <td>Mfr part number: </td>
+                                <td><?php echo $data->mfr_part_number; ?></td>
+                            </tr>
+                            <tr class="row">
+                                <td>Order Quantity: </td>
+                                <td><?php echo $data->ordered_quantity; ?></td>
+                            </tr>
+                            <tr class="row">
+                                <td>Status Description: </td>
+                                <td><?php echo $data->status_description; ?></td>
+                            </tr>
+                    <?php $count++; }  ?>  
+                           
+                    <?php $count = 1; 
+                            foreach ($result2 as $data2 ) { ?>
+                            <tr class="row">
+                            <td><b>Item-<?php echo $count ?></b></td>
+                            </tr>
+                            <tr class="row">
+                                <td> Package Type: </td>
+                                <td><?php echo $data2->pkg_type ;?></td>
+                            </tr>    
+                              <tr class="row">
+                                <td> Ship Carrier: </td>
+                                <td><?php echo $data2->ship_carrier ;?></td>
+                            </tr> 
+                              <tr class="row">
+                                <td> Tracking Number: </td>
+                                <td><?php echo $data2->tracking_number ;?></td>
+                            </tr>   
+                              <tr class="row">
+                                <td> Ship Date: </td>
+                                <td><?php echo $data2->ship_date ;?></td>
+                            </tr>  
+                            
+                            
+                            <?php $count++ ; }?>
                     
                     
             </table>
