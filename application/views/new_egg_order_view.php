@@ -29,9 +29,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     },
                 success: function(data) {                    
 //                    var data = JSON.stringify(data);
-                   // alert(data+ "in success");
-                    console.log("     order# "+id+" Status: "+statusValue);
-                    location.reload();
+                    //alert(data+ "in success");
+                    console.log(data);
+                    //console.log("     order# "+id+" Status: "+statusValue);
+                    //location.reload();
                     $('#loader-'+id).hide();
                 },
                 error: function(err){

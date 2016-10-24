@@ -148,14 +148,29 @@ class NewEggOrderModel extends CI_Model {
             }
         }
         else{
-            $request_fields=array();
-            $endpoint="shippingservice/shippinglabel/shippingrequest?sellerid=";
-            $response= $NewEggApi->order_delivery($endpoint,$orderId,$request_fields);
-            if($response){
-                return $response;
+            for($i=0;$i<count($toShip_details);$i++){
+                $request_fields[$i]=array(
+                    "first_name"    =>$toShip_details[$i]->ship_to_first_name,
+                    "last_name"     =>$toShip_details[$i]->ship_to_last_name,
+                    "contact_number"=>$toShip_details[$i]->customer_phone_number,
+                    "address1"      =>$toShip_details[$i]->address1,
+                    "address2"      =>$toShip_details[$i]->address2,
+                    "city"          =>$toShip_details[$i]->city,
+                    "state"         =>$toShip_details[$i]->state_code,
+                    "zip"           =>$toShip_details[$i]->zip_code,
+                    "country"       =>$toShip_details[$i]->country_code,
+                    "seller_part_number"=>$toShip_details[$i]->seller_part_number,
+                    "ordered_qty"   =>$toShip_details[$i]->ordered_quantity   
+                );
             }
-            else{
-                return $response[0]["Message"];
+            
+            $response= $NewEggApi->order_delivery($orderId,$request_fields);
+            if($response){
+                if(($response[0]["IsSuccess"])=='true')
+                    return $response;
+                else{
+                    return $response[0]["Message"];
+                }
             }
         }         
     }
@@ -190,6 +205,9 @@ class NewEggOrderModel extends CI_Model {
                 $neweggorder["zip_code"]            = $value["ResponseBody"]["OrderInfoList"][0]["ShipToZipCode"];
                 $neweggorder["country_code"]        = $value["ResponseBody"]["OrderInfoList"][0]["ShipToCountryCode"];
                 $neweggorder["ship_service"]        = $value["ResponseBody"]["OrderInfoList"][0]["ShipService"];
+                $neweggorder["ship_to_first_name"]  = $value["ResponseBody"]["OrderInfoList"][0]["ShipToFirstName"];
+                $neweggorder["ship_to_last_name"]   = $value["ResponseBody"]["OrderInfoList"][0]["ShipToLastName"];
+                $neweggorder["ship_to_company"]     = $value["ResponseBody"]["OrderInfoList"][0]["ShipToCompany"];
                 $neweggorder["order_item_amount"]   = $value["ResponseBody"]["OrderInfoList"][0]["OrderItemAmount"];
                 $neweggorder["shipping_amount"]     = $value["ResponseBody"]["OrderInfoList"][0]["ShippingAmount"];
                 $neweggorder["discount_amount"]     = $value["ResponseBody"]["OrderInfoList"][0]["DiscountAmount"];
