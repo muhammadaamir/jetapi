@@ -65,7 +65,6 @@ class NewEggOrderModel extends CI_Model {
                }
             }
         }
-        $this->get_from_newegg_warehouse();
     }
     
     function checkOrderIdExist($orderId) {
@@ -272,7 +271,8 @@ class NewEggOrderModel extends CI_Model {
                 $this->SaveOrderDetail($neweggorder, $iteminfo,$pkginfo,$pkgiteminfo);
             }
       
-        }     
+        }
+        $this->get_from_newegg_warehouse();
         return true;
     }   
     
@@ -300,9 +300,11 @@ class NewEggOrderModel extends CI_Model {
 
     
     public function get_from_newegg_warehouse(){
-        $sPartNumber=$this->get_sPartNumber();
+        foreach ($this->get_sPartNumber() as $sPartNumber) {
+            $spn[]=$sPartNumber->seller_part_number;
+        }
         $NewEggApi= new NewEggApi();
-        $response= $NewEggApi->fromNeweggWarehouse($sPartNumber);
+        $response= $NewEggApi->fromNeweggWarehouse($spn);
         if($response){
             print_r($response);
             die();

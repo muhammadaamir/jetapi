@@ -15,6 +15,7 @@ class NewEggOrder extends CI_Controller {
 //        $response=$this->NewEggOrderModel->is_valid();
         
         $this->NewEggOrderModel->insert_order_details();
+      //  $this->NewEggOrderModel->get_from_newegg_warehouse();
         echo "New Egg Record Add...";
 
     }
