@@ -190,77 +190,77 @@ class NewEggOrderModel extends CI_Model {
     }
 
     public function insert_order_details(){
-        $orderIds = array("101062180","101062360","101062420","101062460","101355900","101355920" , "101355980",
-            "101356020","101356060","101356080","101356140","101356200","101356260","101356280");
         $NewEggApi = new NewEggApi();
-        foreach ($orderIds as $orderId) {
-            $checkOrderIdExist = $this->checkOrderIdExist($orderId);
+        $value=$NewEggApi->orderDetails();
+//        print_r($value);
+//        die();
+        for($cnt=0;$cnt<$value["ResponseBody"]["PageInfo"]["TotalCount"];$cnt++){
+            $checkOrderIdExist = $this->checkOrderIdExist($value["ResponseBody"]["OrderInfoList"][$cnt]["OrderNumber"]);
             if(!count($checkOrderIdExist)){
-                $value=$NewEggApi->orderDetails($orderId);
+                
                 $iteminfo=array();
                 $pkgiteminfo=array();
                 $pkginfo=  array();
                 $neweggorder=array();  
 
-                $neweggorder["order_number"]        = $value["ResponseBody"]["OrderInfoList"][0]["OrderNumber"];
+                $neweggorder["order_number"]        = $value["ResponseBody"]["OrderInfoList"][$cnt]["OrderNumber"];
                 $neweggorder["seller_id"]           = $value["SellerID"];
-                $neweggorder["invoice_number"]      = $value["ResponseBody"]["OrderInfoList"][0]["InvoiceNumber"];
-                $neweggorder["order_downloaded"]    = $value["ResponseBody"]["OrderInfoList"][0]["OrderDownloaded"];
-                $neweggorder["order_date"]          = $value["ResponseBody"]["OrderInfoList"][0]["OrderDate"];
-                $neweggorder["order_status"]        = $value["ResponseBody"]["OrderInfoList"][0]["OrderStatus"];
-                $neweggorder["order_status_description"]  = $value["ResponseBody"]["OrderInfoList"][0]["OrderStatusDescription"];
-                $neweggorder["customer_name"]       = $value["ResponseBody"]["OrderInfoList"][0]["CustomerName"];
-                $neweggorder["customer_phone_number"]  =$value["ResponseBody"]["OrderInfoList"][0]["CustomerPhoneNumber"];
-                $neweggorder["customer_email"]      = $value["ResponseBody"]["OrderInfoList"][0]["CustomerEmailAddress"];
-                $neweggorder["address1"]            = $value["ResponseBody"]["OrderInfoList"][0]["ShipToAddress1"];
-                $neweggorder["address2"]            = $value["ResponseBody"]["OrderInfoList"][0]["ShipToAddress2"];
-                $neweggorder["city"]                = $value["ResponseBody"]["OrderInfoList"][0]["ShipToCityName"];
-                $neweggorder["state_code"]          = $value["ResponseBody"]["OrderInfoList"][0]["ShipToStateCode"];
-                $neweggorder["zip_code"]            = $value["ResponseBody"]["OrderInfoList"][0]["ShipToZipCode"];
-                $neweggorder["country_code"]        = $value["ResponseBody"]["OrderInfoList"][0]["ShipToCountryCode"];
-                $neweggorder["ship_service"]        = $value["ResponseBody"]["OrderInfoList"][0]["ShipService"];
-                $neweggorder["ship_to_first_name"]  = $value["ResponseBody"]["OrderInfoList"][0]["ShipToFirstName"];
-                $neweggorder["ship_to_last_name"]   = $value["ResponseBody"]["OrderInfoList"][0]["ShipToLastName"];
-                $neweggorder["ship_to_company"]     = $value["ResponseBody"]["OrderInfoList"][0]["ShipToCompany"];
-                $neweggorder["order_item_amount"]   = $value["ResponseBody"]["OrderInfoList"][0]["OrderItemAmount"];
-                $neweggorder["shipping_amount"]     = $value["ResponseBody"]["OrderInfoList"][0]["ShippingAmount"];
-                $neweggorder["discount_amount"]     = $value["ResponseBody"]["OrderInfoList"][0]["DiscountAmount"];
-                $neweggorder["order_quantity"]      = $value["ResponseBody"]["OrderInfoList"][0]["OrderQty"];
-                $neweggorder["refund_amount"]       = $value["ResponseBody"]["OrderInfoList"][0]["RefundAmount"];
-     //           $neweggorder["sales_tax"]           = $value["ResponseBody"]["OrderInfoList"][0]["SalesTax"];
-                $neweggorder["order_total_amount"]  = $value["ResponseBody"]["OrderInfoList"][0]["OrderTotalAmount"];
-                $neweggorder["sales_channel"]       = $value["ResponseBody"]["OrderInfoList"][0]["SalesChannel"];
-                $neweggorder["fulfillment_option"]  = $value["ResponseBody"]["OrderInfoList"][0]["FulfillmentOption"];
+                $neweggorder["invoice_number"]      = $value["ResponseBody"]["OrderInfoList"][$cnt]["InvoiceNumber"];
+                $neweggorder["order_downloaded"]    = $value["ResponseBody"]["OrderInfoList"][$cnt]["OrderDownloaded"];
+                $neweggorder["order_date"]          = $value["ResponseBody"]["OrderInfoList"][$cnt]["OrderDate"];
+                $neweggorder["order_status"]        = $value["ResponseBody"]["OrderInfoList"][$cnt]["OrderStatus"];
+                $neweggorder["order_status_description"]  = $value["ResponseBody"]["OrderInfoList"][$cnt]["OrderStatusDescription"];
+                $neweggorder["customer_name"]       = $value["ResponseBody"]["OrderInfoList"][$cnt]["CustomerName"];
+                $neweggorder["customer_phone_number"]  =$value["ResponseBody"]["OrderInfoList"][$cnt]["CustomerPhoneNumber"];
+                $neweggorder["customer_email"]      = $value["ResponseBody"]["OrderInfoList"][$cnt]["CustomerEmailAddress"];
+                $neweggorder["address1"]            = $value["ResponseBody"]["OrderInfoList"][$cnt]["ShipToAddress1"];
+                $neweggorder["address2"]            = $value["ResponseBody"]["OrderInfoList"][$cnt]["ShipToAddress2"];
+                $neweggorder["city"]                = $value["ResponseBody"]["OrderInfoList"][$cnt]["ShipToCityName"];
+                $neweggorder["state_code"]          = $value["ResponseBody"]["OrderInfoList"][$cnt]["ShipToStateCode"];
+                $neweggorder["zip_code"]            = $value["ResponseBody"]["OrderInfoList"][$cnt]["ShipToZipCode"];
+                $neweggorder["country_code"]        = $value["ResponseBody"]["OrderInfoList"][$cnt]["ShipToCountryCode"];
+                $neweggorder["ship_service"]        = $value["ResponseBody"]["OrderInfoList"][$cnt]["ShipService"];
+                $neweggorder["ship_to_first_name"]  = $value["ResponseBody"]["OrderInfoList"][$cnt]["ShipToFirstName"];
+                $neweggorder["ship_to_last_name"]   = $value["ResponseBody"]["OrderInfoList"][$cnt]["ShipToLastName"];
+                $neweggorder["ship_to_company"]     = $value["ResponseBody"]["OrderInfoList"][$cnt]["ShipToCompany"];
+                $neweggorder["order_item_amount"]   = $value["ResponseBody"]["OrderInfoList"][$cnt]["OrderItemAmount"];
+                $neweggorder["shipping_amount"]     = $value["ResponseBody"]["OrderInfoList"][$cnt]["ShippingAmount"];
+                $neweggorder["discount_amount"]     = $value["ResponseBody"]["OrderInfoList"][$cnt]["DiscountAmount"];
+                $neweggorder["order_quantity"]      = $value["ResponseBody"]["OrderInfoList"][$cnt]["OrderQty"];
+                $neweggorder["refund_amount"]       = $value["ResponseBody"]["OrderInfoList"][$cnt]["RefundAmount"];
+     //           $neweggorder["sales_tax"]           = $value["ResponseBody"]["OrderInfoList"][$cnt]["SalesTax"];
+                $neweggorder["order_total_amount"]  = $value["ResponseBody"]["OrderInfoList"][$cnt]["OrderTotalAmount"];
+                $neweggorder["sales_channel"]       = $value["ResponseBody"]["OrderInfoList"][$cnt]["SalesChannel"];
+                $neweggorder["fulfillment_option"]  = $value["ResponseBody"]["OrderInfoList"][$cnt]["FulfillmentOption"];
                 
-                $item_info_array=$value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"];
+                $item_info_array=$value["ResponseBody"]["OrderInfoList"][$cnt]["ItemInfoList"];
                 for($i=0;$i<count($item_info_array);$i++){
-                    $iteminfo[$i]["order_number"]           = $value["ResponseBody"]["OrderInfoList"][0]["OrderNumber"];
-                    $iteminfo[$i]["seller_part_number"]     = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["SellerPartNumber"];
-                    $iteminfo[$i]["item_number"]            = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["NeweggItemNumber"];
-                    $iteminfo[$i]["mfr_part_number"]        = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["MfrPartNumber"];
-                    $iteminfo[$i]["upc_code"]               = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["UPCCode"];
-                    $iteminfo[$i]["ordered_quantity"]       = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["OrderedQty"];
-                    $iteminfo[$i]["shipped_quantity"]       = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["ShippedQty"];
-                    $iteminfo[$i]["unit_price"]             = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["UnitPrice"];
-                    $iteminfo[$i]["status"]                 = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["Status"];
-                    $iteminfo[$i]["status_description"]     = $value["ResponseBody"]["OrderInfoList"][0]["ItemInfoList"][$i]["StatusDescription"];
+                    $iteminfo[$i]["order_number"]           = $value["ResponseBody"]["OrderInfoList"][$cnt]["OrderNumber"];
+                    $iteminfo[$i]["seller_part_number"]     = $item_info_array[$i]["SellerPartNumber"];
+                    $iteminfo[$i]["item_number"]            = $item_info_array[$i]["NeweggItemNumber"];
+                    $iteminfo[$i]["mfr_part_number"]        = $item_info_array[$i]["MfrPartNumber"];
+                    $iteminfo[$i]["upc_code"]               = $item_info_array[$i]["UPCCode"];
+                    $iteminfo[$i]["ordered_quantity"]       = $item_info_array[$i]["OrderedQty"];
+                    $iteminfo[$i]["shipped_quantity"]       = $item_info_array[$i]["ShippedQty"];
+                    $iteminfo[$i]["unit_price"]             = $item_info_array[$i]["UnitPrice"];
+                    $iteminfo[$i]["status"]                 = $item_info_array[$i]["Status"];
+                    $iteminfo[$i]["status_description"]     = $item_info_array[$i]["StatusDescription"];
                 }
-                $pkg=$value["ResponseBody"]["OrderInfoList"][0]["PackageInfoList"];
+                $pkg=$value["ResponseBody"]["OrderInfoList"][$cnt]["PackageInfoList"];
                 if(!empty($pkg)){
                     for($i=0;$i<count($pkg);$i++){
 
-                        $pkginfo[$i]["order_number"]            = $orderId;
+                        $pkginfo[$i]["order_number"]            = $value["ResponseBody"]["OrderInfoList"][$cnt]["OrderNumber"];
                         $pkginfo[$i]["pkg_type"]                = $pkg[$i]["PackageType"];
                         $pkginfo[$i]["ship_carrier"]            = $pkg[$i]["ShipCarrier"];
                         $pkginfo[$i]["ship_service"]            = $pkg[$i]["ShipService"];
                         $pkginfo[$i]["tracking_number"]         = $pkg[$i]["TrackingNumber"];
                         $pkginfo[$i]["ship_date"]               = $pkg[$i]["ShipDate"];
 
-                       // $this->db->insert('newegg_pkg_info',$pkginfo);
                         $pkgItem=$pkg[$i]["ItemInfoList"];
 
                         for($j=0;$j<count($pkgItem);$j++){
-                            $pkgiteminfo[$i][$j]["order_number"]        = $orderId;
+                            $pkgiteminfo[$i][$j]["order_number"]        = $value["ResponseBody"]["OrderInfoList"][$cnt]["OrderNumber"];
                             $pkgiteminfo[$i][$j]["seller_part_number"]  = $pkgItem[$j]["SellerPartNumber"];
                             $pkgiteminfo[$i][$j]["mfr_part_number"]     = $pkgItem[$j]["MfrPartNumber"];
                             $pkgiteminfo[$i][$j]["shipped_quantity"]    = $pkgItem[$j]["ShippedQty"];
@@ -270,9 +270,8 @@ class NewEggOrderModel extends CI_Model {
                 
                 $this->SaveOrderDetail($neweggorder, $iteminfo,$pkginfo,$pkgiteminfo);
             }
-      
         }
-        $this->get_from_newegg_warehouse();
+        //$this->get_from_newegg_warehouse();
         return true;
     }   
     
@@ -308,7 +307,7 @@ class NewEggOrderModel extends CI_Model {
         if($response){
             print_r($response);
             die();
-            return $response;
+            //return $response;
         }
         else {
             return $response[0]["Message"];
