@@ -40,7 +40,6 @@ class NewEggApi
 
     }
     
-    
     public function create_json($data){
         $data = preg_replace('/: /', ':', $data);
         $data = preg_replace('/, /', ',', $data);
@@ -296,6 +295,86 @@ class NewEggApi
         $request_body= json_encode($request_body);
 //        print_r($request_body);
 //        die();
+        $ch=  curl_init(self::$api_prefix.$endpoint);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $request_body);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array( 
+            'Authorization:'.self::$api_user_id,
+            'SecretKey:'.self::$api_secret,
+            'Content-Type: application/json',
+            'Accept: application/json' ) );
+        $data=  curl_exec($ch);
+        return $this->create_json($data);
+    }
+    
+    public function get_shipping_request_details($orderId){
+        $endpoint="shippingservice/shippinglabel/shippingdetail?sellerid=".self::$seller_id;
+        $request_body=array(
+            'OperationType' =>'GetShippingDetailRequest',
+            'RequestBody'   => array(
+                //'RequestID' => '',
+                'OrderNumber'   => $orderId
+            )
+        );
+        $request_body= json_encode($request_body);
+        $ch=  curl_init(self::$api_prefix.$endpoint);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $request_body);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array( 
+            'Authorization:'.self::$api_user_id,
+            'SecretKey:'.self::$api_secret,
+            'Content-Type: application/json',
+            'Accept: application/json' ) );
+        $data=  curl_exec($ch);
+        return $this->create_json($data);
+    }
+    
+    public function get_confirm_shipping_request($requestIdArray){
+        $endpoint= "shippingservice/shippinglabel/confirmshippingrequest?sellerid=".self::$seller_id;
+        $requestID = array();
+        foreach ($requestIdArray as $id) {
+            $requestID[] = $id;
+        }
+        $request_body=array(
+            'OperationType' =>'ConfirmShippingRequest',
+            'RequestBody'   => array(
+                'RequestIDList' => $requestID
+            )
+        );
+        $request_body= json_encode($request_body);
+        //print_r($request_body);
+        //die();
+        $ch=  curl_init(self::$api_prefix.$endpoint);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $request_body);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array( 
+            'Authorization:'.self::$api_user_id,
+            'SecretKey:'.self::$api_secret,
+            'Content-Type: application/json',
+            'Accept: application/json' ) );
+        $data=  curl_exec($ch);
+        return $this->create_json($data);
+        
+    }
+    
+    public function get_package_list($requestId,$orderId){
+        $endpoint = "shippingservice/shippinglabel/packagelist?sellerid=".self::$seller_id;
+        $request_body=array(
+            'OperationType' =>'GetPackageListRequest',
+            'RequestBody'   => array(
+                'RequestID'     => $requestId,
+                'OrderNumber'   => $orderId
+            )
+        );
+        $request_body= json_encode($request_body);
+        //print_r($request_body);
+        //die();
         $ch=  curl_init(self::$api_prefix.$endpoint);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");

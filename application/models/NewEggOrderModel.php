@@ -314,14 +314,52 @@ class NewEggOrderModel extends CI_Model {
         }
     }
 
-        public function remove_item($orderId){
+    public function remove_item($orderId){
         $NewEggApi=new NewEggApi();
         $details_response=$this->get_order_detail($orderId);
         $SPartNumber= $details_response[0]->seller_part_number;
         $response=$NewEggApi->removeItem($orderId,$SPartNumber);
         return $response;
     }
-            
+    
+    public function shipping_request_details($orderId){
+        $NewEggApi= new NewEggApi();
+        $response=  $NewEggApi->get_shipping_request_details($orderId);
+        if($response["NeweggAPIResponse"]){
+            return $response;
+        }
+        else{
+            return $response[0]["Message"];
+        }      
+    }
+
+    public function confirm_shipping_request(){
+        $requestIdArray=array();
+        $NewEggApi= new NewEggApi();
+        $response = $NewEggApi->get_confirm_shipping_request($requestIdArray);
+        if($response["NeweggAPIResponse"]){
+            return $response;
+        }
+        else{
+            return $response[0]["Message"];
+        }
+    }
+    
+    
+    // "void shipping request" function
+
+    public function package_list(){
+        $NewEggApi = new NewEggApi();
+        $response = $NewEggApi->get_package_list($requestId,$orderId);
+        if($response["NeweggAPIResponse"]){
+            return $response;
+        }
+        else{
+            return $response[0]["Message"];
+        }
+    }
+
+
     public function is_valid(){
         $NewEggApi= new NewEggApi();
         return $NewEggApi->isValid();
