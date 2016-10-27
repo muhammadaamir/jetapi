@@ -152,7 +152,7 @@ class NewEggOrderModel extends CI_Model {
             
             $response=$NewEggApi->orderUpdate($orderId, $request_fields);
             if($response){
-                if(($response["IsSuccess"])=='true'){
+                if(($response["UpdateOrderStatusInfo"]["IsSuccess"])=='true'){
                     $this->update_status($orderId,$status);
                     return TRUE;
                 }
@@ -180,7 +180,7 @@ class NewEggOrderModel extends CI_Model {
             
             $response= $NewEggApi->order_delivery($orderId,$request_fields);
             if($response){
-                if(($response[0]["IsSuccess"])=='true')
+                if(($response["NeweggAPIResponse"]["IsSuccess"])=='true')
                     return $response;
                 else{
                     return $response[0]["Message"];
