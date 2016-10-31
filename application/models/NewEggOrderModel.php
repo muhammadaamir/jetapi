@@ -5,6 +5,12 @@ class NewEggOrderModel extends CI_Model {
     public function __construct() {
         parent::__construct();
     }
+    
+    
+    public function for_csv(){
+        $query= $this->db->get('neweggorders');
+        return $query;
+    }
 
     public function get_order_detail($orderId) {
         $this->db->select('*');
@@ -152,7 +158,7 @@ class NewEggOrderModel extends CI_Model {
             
             $response=$NewEggApi->orderUpdate($orderId, $request_fields);
             if($response){
-                if(($response["UpdateOrderStatusInfo"]["IsSuccess"])=='true'){
+                if($response["UpdateOrderStatusInfo"]){
                     $this->update_status($orderId,$status);
                     return TRUE;
                 }
@@ -172,7 +178,7 @@ class NewEggOrderModel extends CI_Model {
                     "city"          =>$toShip_details[$i]->city,
                     "state"         =>$toShip_details[$i]->state_code,
                     "zip"           =>$toShip_details[$i]->zip_code,
-                    "country"       =>$toShip_details[$i]->country_code,
+//                    "country"       =>$toShip_details[$i]->country_code,
                     "seller_part_number"=>$toShip_details[$i]->seller_part_number,
                     "ordered_qty"   =>$toShip_details[$i]->ordered_quantity   
                 );
@@ -180,7 +186,7 @@ class NewEggOrderModel extends CI_Model {
             
             $response= $NewEggApi->order_delivery($orderId,$request_fields);
             if($response){
-                if(($response["NeweggAPIResponse"]["IsSuccess"])=='true')
+                if($response["NeweggAPIResponse"])
                     return $response;
                 else{
                     return $response[0]["Message"];
@@ -296,7 +302,6 @@ class NewEggOrderModel extends CI_Model {
         return FALSE;
     }
 
-
     
     public function get_from_newegg_warehouse(){
         foreach ($this->get_sPartNumber() as $sPartNumber) {
@@ -343,8 +348,7 @@ class NewEggOrderModel extends CI_Model {
         else{
             return $response[0]["Message"];
         }
-    }
-    
+    } 
     
     // "void shipping request" function
 
