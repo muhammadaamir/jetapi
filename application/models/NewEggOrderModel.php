@@ -5,12 +5,6 @@ class NewEggOrderModel extends CI_Model {
     public function __construct() {
         parent::__construct();
     }
-    
-    
-    public function for_csv(){
-        $query= $this->db->get('neweggorders');
-        return $query;
-    }
 
     public function get_order_detail($orderId) {
         $this->db->select('*');

@@ -1,6 +1,28 @@
 <?php
 
 class ProductModel extends CI_Model {
+    
+    
+    public function sku_feed(){
+        $this->db->select('listing-id','manufacturer','asin1','seller-sku','item-name',
+            'item-description','product_image','price','product-id');
+        $this->db->from('bf_amazon_products');
+        $this->db->join('bf_amazon_products_meta','bf_amazon_products.listing-id = bf_amazon_products_meta.listing-id');
+        if ($query->num_rows() > 0) {
+            return $query->result_array();
+        }
+    }
+    
+    public function mp_feed(){
+        $this->db->select('listing-id','product-id','product-id-type','item-condition',
+                'price','quantity','expedited-shipping','item-description','reference-id');
+        $this->db->from('bf_amazon_products');
+        $query=  $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query;
+        }
+    }
+            
 
     function getProduct() {
         $this->db->select("*");
