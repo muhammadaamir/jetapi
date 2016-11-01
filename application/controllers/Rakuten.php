@@ -5,7 +5,8 @@ class Rakuten extends CI_Controller{
         parent::__Construct();
         //$this->load->library('Rakuten'); // load libbrary
         $this->load->model('ProductModel');
-    }
+        $this->load->library('RakutenApi');      
+        }
     
     public function index(){
         echo "in Rakuten controller";
@@ -19,11 +20,11 @@ class Rakuten extends CI_Controller{
 //        $csv = $this->dbutil->csv_from_result($object);
 //        write_file(FCPATH."/assets/csv_files/mp_feed.csv", $csv);
         
-        
-        $this->load->library('Rakuten');      
-        $result=$this->rakuten->Func();
-        if($result)
-            echo "success";
+        $RakutenApi = new RakutenApi();
+        $response = $RakutenApi->Func();
+//        $result=$this->rakuten->Func();
+//        if($result)
+            echo "success :".$response;
     }
     
     
