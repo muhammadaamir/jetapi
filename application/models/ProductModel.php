@@ -2,18 +2,6 @@
 
 class ProductModel extends CI_Model {
     
-    public function mp_feed(){
-//        $this->db->select('listing-id','product-id','product-id-type','item-condition',
-//                'price','quantity','expedited-shipping','item-description','reference-id');
-        $this->db->select('*');
-        $this->db->from('bf_amazon_products');
-        $query=  $this->db->get();
-        if ($query->num_rows() > 0) {
-            return $query;
-        }
-    }
-            
-
     function getProduct() {
         $this->db->select("*");
         $this->db->from('bf_amazon_products');
