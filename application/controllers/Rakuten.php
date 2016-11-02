@@ -12,7 +12,7 @@ class Rakuten extends CI_Controller{
     
     public function products(){  
         $path = FCPATH."/assets/csv_files/sku_feed.csv";
-        $RakutenApi = new RakutenApi();   
+        $RakutenApi  = new RakutenApi();   
         $result=$RakutenApi->products($path);
         if($result)
             echo "Products csv written to the file ".$path;
