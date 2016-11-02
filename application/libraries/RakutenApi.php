@@ -22,18 +22,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             
             $wb= fopen($path, 'wb');
             $a= fopen($path, 'a');
-            $headings=array('gtin','mfg-name','asin','seller-sku','title','description',
-                'main-image','listing-price','mfg-part-number','category-id','seller-id','weight');
-            $static_fields=array('0349','ABCD','1kg');
+            $headings=array('seller-id','gtin','mfg-name','mfg-part-number','asin','seller-sku','title','description',
+                'main-image','weight','features','listing-price','category-id');
+            $static_fields=array('ABCD','1kg','0349');
 
             fputcsv($wb, $headings);
 
             $array=$this->CI->ProductModel->getProduct();
             foreach ($array as $row){
                 $new_array = array(
-                    $row->$listing_id,$row->manufacturer,$row->asin1,$row->$seller_sku,
-                    $row->$item_name,$row->$item_desc,$row->product_image,$row->price,$row->$product_id,
-                    $static_fields[0],$static_fields[1],$static_fields[2]);
+                    $static_fields[0],$row->$listing_id,$row->manufacturer,$row->$product_id,$row->asin1,
+                    $row->$seller_sku,$row->$item_name,$row->$item_desc,$row->product_image,$static_fields[1],
+                    $row->features,$row->price,$static_fields[2]);
                 if(!fputcsv($a, $new_array)){
                     return FALSE;
                 }
