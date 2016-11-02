@@ -3,7 +3,6 @@
 class Rakuten extends CI_Controller{
     function __Construct() {
         parent::__Construct();
-        $this->load->model('ProductModel');
         $this->load->library('RakutenApi'); 
     }
     
