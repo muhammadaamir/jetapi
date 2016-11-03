@@ -36,11 +36,21 @@ class Rakuten extends CI_Controller{
         $this->excel->getActiveSheet()->setCellValue('C1', 'ProductIdType');
         $this->excel->getActiveSheet()->setCellValue('D1', 'ItemCondition');
         $this->excel->getActiveSheet()->setCellValue('E1', 'Price');
-        $this->excel->getActiveSheet()->setCellValue('F1', 'Quantity');
-        $this->excel->getActiveSheet()->setCellValue('G1', 'OfferExpeditedShipping');
-        $this->excel->getActiveSheet()->setCellValue('H1', 'Description');
-        $this->excel->getActiveSheet()->setCellValue('I1', 'ReferenceId');
-        $this->excel->getActiveSheet()->getStyle('A1:I1')->getFont()->setBold(true);
+        $this->excel->getActiveSheet()->setCellValue('F1', 'MAP');
+        $this->excel->getActiveSheet()->setCellValue('G1', 'MAPType');
+        $this->excel->getActiveSheet()->setCellValue('H1', 'Quantity');
+        $this->excel->getActiveSheet()->setCellValue('I1', 'OfferExpeditedShipping');
+        $this->excel->getActiveSheet()->setCellValue('J1', 'Description');
+        $this->excel->getActiveSheet()->setCellValue('K1', 'ShippingRateStandard');
+        $this->excel->getActiveSheet()->setCellValue('L1', 'ShippingRateExpedited');
+        $this->excel->getActiveSheet()->setCellValue('M1', 'ShippingLeadTime');
+        $this->excel->getActiveSheet()->setCellValue('N1', 'OfferTwoDayShipping');
+        $this->excel->getActiveSheet()->setCellValue('O1', 'ShippingRateTwoDay');
+        $this->excel->getActiveSheet()->setCellValue('P1', 'OfferOneDayShipping');
+        $this->excel->getActiveSheet()->setCellValue('Q1', 'ShippingRateOneDay');
+        $this->excel->getActiveSheet()->setCellValue('R1', 'OfferLocalDeliveryShippingRates');
+        $this->excel->getActiveSheet()->setCellValue('S1', 'ReferenceId');
+        $this->excel->getActiveSheet()->getStyle('A1:S1')->getFont()->setBold(true);
         
         $i = 3;
         $listing_id = 'listing-id';
@@ -58,11 +68,21 @@ class Rakuten extends CI_Controller{
             $this->excel->getActiveSheet()->setCellValue('C'.$i, $item->$product_id_type);
             $this->excel->getActiveSheet()->setCellValue('D'.$i, $item->$item_condition);
             $this->excel->getActiveSheet()->setCellValue('E'.$i, $item->price);
-            $this->excel->getActiveSheet()->setCellValue('F'.$i, $item->quantity);
-            $this->excel->getActiveSheet()->setCellValue('G'.$i, $item->$expedited_shipping);
-            $this->excel->getActiveSheet()->setCellValue('H'.$i, $item->$item_desc);
-            $this->excel->getActiveSheet()->setCellValue('I'.$i, $item->$seller_sku);
-//            $this->excel->getActiveSheet()->getColumnDimension('A')->setWidth(15);
+            $this->excel->getActiveSheet()->setCellValue('F'.$i, '');
+            $this->excel->getActiveSheet()->setCellValue('G'.$i, '');
+            $this->excel->getActiveSheet()->setCellValue('H'.$i, $item->quantity);
+            $this->excel->getActiveSheet()->setCellValue('I'.$i, $item->$expedited_shipping);
+            $this->excel->getActiveSheet()->setCellValue('J'.$i, $item->$item_desc);
+            $this->excel->getActiveSheet()->setCellValue('K'.$i, '');
+            $this->excel->getActiveSheet()->setCellValue('L'.$i, '');
+            $this->excel->getActiveSheet()->setCellValue('M'.$i, '');
+            $this->excel->getActiveSheet()->setCellValue('N'.$i, '');
+            $this->excel->getActiveSheet()->setCellValue('O'.$i, '');
+            $this->excel->getActiveSheet()->setCellValue('P'.$i, '');
+            $this->excel->getActiveSheet()->setCellValue('Q'.$i, '');
+            $this->excel->getActiveSheet()->setCellValue('R'.$i, '');
+            $this->excel->getActiveSheet()->setCellValue('S'.$i, $item->$seller_sku);
+            
             $this->excel->getActiveSheet()->getColumnDimension('A')->setAutoSize(TRUE);
             $this->excel->getActiveSheet()->getColumnDimension('B')->setAutoSize(TRUE);
             $this->excel->getActiveSheet()->getColumnDimension('C')->setAutoSize(TRUE);
@@ -72,6 +92,16 @@ class Rakuten extends CI_Controller{
             $this->excel->getActiveSheet()->getColumnDimension('G')->setAutoSize(TRUE);
             $this->excel->getActiveSheet()->getColumnDimension('H')->setAutoSize(TRUE);
             $this->excel->getActiveSheet()->getColumnDimension('I')->setAutoSize(TRUE);
+            $this->excel->getActiveSheet()->getColumnDimension('J')->setAutoSize(TRUE);
+            $this->excel->getActiveSheet()->getColumnDimension('K')->setAutoSize(TRUE);
+            $this->excel->getActiveSheet()->getColumnDimension('L')->setAutoSize(TRUE);
+            $this->excel->getActiveSheet()->getColumnDimension('M')->setAutoSize(TRUE);
+            $this->excel->getActiveSheet()->getColumnDimension('N')->setAutoSize(TRUE);
+            $this->excel->getActiveSheet()->getColumnDimension('O')->setAutoSize(TRUE);
+            $this->excel->getActiveSheet()->getColumnDimension('P')->setAutoSize(TRUE);
+            $this->excel->getActiveSheet()->getColumnDimension('Q')->setAutoSize(TRUE);
+            $this->excel->getActiveSheet()->getColumnDimension('R')->setAutoSize(TRUE);
+            $this->excel->getActiveSheet()->getColumnDimension('S')->setAutoSize(TRUE);
             
             $i++;
         }
