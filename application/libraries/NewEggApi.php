@@ -40,6 +40,39 @@ class NewEggApi
 
     }
     
+    public function addProduct($data){
+        $endpoint="datafeedmgmt/feeds/submitfeed?sellerid=".$this::$seller_id."&requesttype=ITEM_DATA";
+        
+        $request_body["NeweggEnvelope"]= array(
+            "Header"=>array(
+                "DocumentVersion"=>"1.0"
+            ),
+            "MessageType"=>"BatchItemCreation",
+            "Overwrite"=>"No",
+            "Message"=>array(
+                "Itemfeed"=>array(
+                    "SummaryInfo"=>array(
+                        "Item"=>$data,
+                    ),
+                ),
+            ),
+        );
+
+        $request_body=  json_encode($request_body);
+        $ch=  curl_init(self::$api_prefix.$endpoint);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $request_body);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array( 
+            'Authorization:'.self::$api_user_id,
+            'SecretKey:'.self::$api_secret,
+            'Content-Type: application/json',
+            'Accept: application/json' ) );
+        $data =  curl_exec($ch);
+        return $this->create_json($data);
+    }
+
     public function create_json($data){
         $data = preg_replace('/: /', ':', $data);
         $data = preg_replace('/, /', ',', $data);

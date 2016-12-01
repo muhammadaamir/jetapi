@@ -5,7 +5,88 @@ class NewEggOrderModel extends CI_Model {
     public function __construct() {
         parent::__construct();
     }
-
+    
+    function getProduct() {
+        $this->db->select("*");
+        $this->db->from('bf_amazon_products');
+        $this->db->join('bf_amazon_products_meta', 'bf_amazon_products.listing-id = bf_amazon_products_meta.listing-id', 'inner');
+        $query = $this->db->get();
+        return $query->result();
+    }
+    
+    function addProduct($products) {
+        $data = Array();
+        $itemname = "item-name";
+        $productid = "product-id";
+        $productidtype = "product-id-type";
+        $sellersku = "seller-sku";
+        $itemdescription = "item-description";
+        $itemcondition = "item-condition";
+        foreach ($products as $product){
+            
+            $specific = unserialize($product->dimensions);
+            $item["Action"] = "Create Item";            
+            $item["BasicInfo"] = array(
+                "SellerPartNumber"=>$product->$sellersku,
+                "Manufacturer"=>$product->manufacturer,
+                "ManufacturerPartNumberOrISBN"=>$product->brand,
+                "WebsiteShortTitle"=>"",
+                "ProductDescription"=>$product->$itemdescription,
+                "ItemDimension"=>array(
+                    "ItemLength"=>$specific["package"]['length'],
+                    "ItemWidth"=>$specific["package"]['weight'],
+                    "ItemHeight"=>$specific["package"]['height'],
+                ),
+                "ItemWeight"=>"",
+                "PacksOrSets"=>"",
+                "ItemCondition"=>$product->$itemcondition,
+                "ItemPackage"=>"",
+                "ShippingRestriction"=>"",
+                "Currency"=>"",
+                "MSRP"=>"",
+                "SellingPrice"=>(int) $product->price,
+                "Shipping"=>"",
+                "Inventory"=>(int) $product->quantity,
+                "ActivationMark"=>"",
+                "ItemImages"=>array(
+                    "Image"=>array(
+                        "ImageUrl"=>$product->product_image,
+                    )
+                ),
+                "Warning"=>array(
+                    "Prop65"=>"",
+                    "Prop65Motherboard"=>"",
+                    "OverAge18Verification"=>"",
+                    "ChokingHazard"=>array(
+                        "SmallParts"=>"",
+                        "SmallBall"=>"",
+                        "Balloons"=>"",
+                        "Marble"=>"",
+                    ),
+                ),
+            );
+            $item["SubCategoryProperty"] = array(
+                "CostumeAccessories"=>array(
+                    "CostumeAccBrand"=>"",
+                    "CostumeAccModel"=>"",
+                    "CostumeAccGender"=>"",
+                    "CostumeAccAge"=>"",
+                    "CostumeAccType"=>"",
+                    "CostumeAccTheme"=>"",
+                    "CostumeAccOccasion"=>"",
+                    "CostumeAccSize"=>"",
+                    "CostumeAccColor"=>"",
+                    "CostumeAccMaterial"=>"",
+                    "CostumeAccCareInstructions"=>"",
+                ),
+            );
+            $data[] = $item;
+        }
+        $NewEggApi= new NewEggApi();
+        $response = $NewEggApi->addProduct($data);
+        echo "<pre>";print_r($response);
+    }
+    
     public function get_order_detail($orderId) {
         $this->db->select('*');
         $this->db->from('neweggorders');

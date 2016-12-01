@@ -77,5 +77,11 @@ class NewEggOrder extends CI_Controller {
         else echo "Could not remove item";
     }
     
-    
+    public function product(){
+        echo "Fetching Product For Newegg";
+        $products = $this->NewEggOrderModel->getProduct();
+        echo "Add Product For Newegg";
+        $this->NewEggOrderModel->addProduct($products);
+        
+    }
 }
