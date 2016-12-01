@@ -84,7 +84,7 @@ class NewEggOrderModel extends CI_Model {
         }
         $NewEggApi= new NewEggApi();
         $response = $NewEggApi->addProduct($data);
-        echo "<pre>";print_r($response);
+//        echo "<pre>";print_r($response);
     }
     
     public function get_order_detail($orderId) {
